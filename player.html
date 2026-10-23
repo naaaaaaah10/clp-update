@@ -83,10 +83,10 @@ input[type=range]{width:100%}
 <select id="jm"><option value="mob">모바일 (각도 판정 · 최소 ±50/70/90ms)</option><option value="nor">PC 보통</option><option value="len">PC 느슨</option><option value="str">PC 엄격</option></select>
 <p class="m">원작 방식: 판정은 타일의 각도 오차(±30°/±45°/±60°)를 BPM으로 시간 환산합니다. 느린 BPM에서는 허용 ms가 넓어지고, 빠른 BPM에서는 모드별 최소 ms(모바일 50/70/90 · PC 보통 25/30/65 · 느슨 25/30/91 · 엄격 25/30/40)에서 제한됩니다.</p>
 <div class="m">입력 오프셋 <b id="cv">0</b>ms</div>
-<input type="range" id="cal" min="-300" max="300" value="0">
+<input type="range" id="cal" min="-1000" max="1000" value="0">
 <button id="cb2" class="btn" style="background:var(--card);color:var(--fg);border:1px solid var(--mut)">오프셋 보정 (100BPM 반복)</button>
 <div class="m">고속 입력 오프셋 (200BPM 이상) <b id="cv2">100BPM과 동일</b></div>
-<input type="range" id="cal2" min="-300" max="300" value="0">
+<input type="range" id="cal2" min="-1000" max="1000" value="0">
 <button id="cb3" class="btn" style="background:var(--card);color:var(--fg);border:1px solid var(--mut)">고속 오프셋 보정 (200BPM 반복)</button>
 <p class="m">사람은 느린 박자에서는 박보다 일찍, 빠른 박자에서는 박에 더 가깝게 누르는 경향이 있어 100BPM에서 맞춘 오프셋이 빠른 구간에서는 어긋나 느껴질 수 있습니다. 두 지점(100BPM / 200BPM)을 각각 보정하면 맵의 실제 BPM에 맞춰 그 사이 값이 자동으로 적용됩니다. 고속 보정을 하지 않으면 모든 속도에 100BPM 값이 적용됩니다.</p>
 <p class="m">🎵 음악 싱크는 맵 파일의 <b>offset</b>을 원작과 같은 방식으로 자동 적용합니다. 맵마다 따로 맞출 필요가 없고, 기기 지연은 위의 <b>입력 오프셋</b>(보정)만 쓰면 됩니다.</p>
@@ -1038,8 +1038,25 @@ function tap(ts){
   if(!CK.n||G.ctx.state!=='running')return;
   const T=tOf(stamp(ts));
   if(G.cal){
-    const iv=G.iv||.6,k=Math.round(T/iv),d=T-k*iv;
-    if(k>=1&&Math.abs(d)<Math.min(.25,iv*.45)){
+    // 가장 가까운 박에 붙이면 크게 늦게 누르는 사람이 '다음 박보다 빨리' 누른 것으로 잘못 측정된다.
+    // 그래서 '어느 박을 누른 건지'를 박 위치로 추정하지 않고, 누른 순서로 이어서 센다:
+    //  - 첫 탭은 첫 박(k=1)을 누른 것으로 본다(첫 박 -0.2박 ~ 1.5박 사이에 눌러야 인정, 그 뒤면 안내 후 무시).
+    //  - 다음 탭은 직전 탭과의 시간 간격을 박 길이로 나눈 값(반올림)만큼 박 번호가 증가한다.
+    //  그래서 한 박(예: 100BPM에서 600ms)을 넘게 늦게 눌러도 일정하게 늦으면 그대로 측정된다.
+    const iv=G.iv||.6;
+    let k;
+    if(G.lastK==null){
+      if(T<iv*.8)return;                        // 카운트다운 중 탭은 무시
+      if(T>iv*2.5){$('#cm').textContent='첫 박 소리부터 바로 눌러 주세요 (이미 많이 지났어요, 계속 누르면 다시 맞춰요)';G.late1=(G.late1||0)+1;if(G.late1<3)return;k=Math.max(1,Math.round(T/iv))}
+      else k=1;
+    }else{
+      const st=Math.round((T-G.lastT)/iv);
+      if(st<1)return;                           // 한 박 안에 두 번 누른 건 한 번으로 본다
+      k=G.lastK+st;
+    }
+    const d=T-k*iv;
+    if(k>=1){
+      G.lastK=k;G.lastT=T;
       G.ds.push(d);if(G.ds.length>24)G.ds.shift();
       // 평균 대신 중앙값: 실수로 튀는 탭 한두 번에 흔들리지 않는다
       const s=[...G.ds].sort((x,y)=>x-y),h=s.length>>1,a=s.length%2?s[h]:(s[h-1]+s[h])/2,
@@ -1731,7 +1748,7 @@ function exit(){
 }
 $('#x').onclick=exit;$('#go').onclick=go;$('#cb2').onclick=()=>{if(busy||G)return;getCtx();calib(100,'base')};
 $('#cb3').onclick=()=>{if(busy||G)return;getCtx();calib(200,'fast')};
-$('#ap').onclick=()=>{if(!G||G.avg==null)return;const v=Math.max(-300,Math.min(300,Math.round(-G.avg*1000)));
+$('#ap').onclick=()=>{if(!G||G.avg==null)return;const v=Math.max(-1000,Math.min(1000,Math.round(-G.avg*1000)));
   if(G.tgt==='fast'){$('#cal2').value=v;fastSet=true;setFastTxt();sv('adofai-cal2',v)}else{$('#cal').value=v;$('#cv').textContent=v;sv('adofai-cal',v)}exit()};
 
 const pc=$('#pc'),ps=$('#ps');
