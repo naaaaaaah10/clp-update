@@ -1,8 +1,8 @@
 <!doctype html>
-<!--CLP-PLAYER 0.11.2-->
+<!--CLP-PLAYER 0.11.5-->
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Custom Level Player 0.11.2</title>
+<title>Custom Level Player 0.11.5</title>
 <style>
 :root{--bg:#f4f4f6;--fg:#15151a;--card:#fff;--ac:#e8453c;--mut:#777;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101015;--fg:#eee;--card:#1b1b23;--mut:#999}}
@@ -54,7 +54,7 @@ input[type=range]{width:100%}
 </style></head>
 <body>
 <div id="menu">
-<h1>Custom Level Player 0.11.2</h1>
+<h1>Custom Level Player 0.11.5</h1>
 <p class="m">.adofai 파일과 곡 파일(ogg·mp3·wav)을 함께 선택하거나, 레벨 .zip 을 선택하세요. 파일은 기기 안에서만 처리되며, 한 번 선택한 맵은 아래 보관함에 자동 저장됩니다.</p>
 <div class="btn pick">파일 선택<input id="f" type="file" multiple></div>
 <div id="fl" class="m"></div>
@@ -88,12 +88,16 @@ input[type=range]{width:100%}
 <div class="m">고속 입력 오프셋 (200BPM 이상) <b id="cv2">100BPM과 동일</b></div>
 <input type="range" id="cal2" min="-1000" max="1000" value="0">
 <button id="cb3" class="btn" style="background:var(--card);color:var(--fg);border:1px solid var(--mut)">고속 오프셋 보정 (200BPM 반복)</button>
+<button id="cz" class="btn" style="background:var(--card);color:var(--fg);border:1px solid var(--mut)">오프셋 모두 0으로 초기화</button>
 <p class="m">사람은 느린 박자에서는 박보다 일찍, 빠른 박자에서는 박에 더 가깝게 누르는 경향이 있어 100BPM에서 맞춘 오프셋이 빠른 구간에서는 어긋나 느껴질 수 있습니다. 두 지점(100BPM / 200BPM)을 각각 보정하면 맵의 실제 BPM에 맞춰 그 사이 값이 자동으로 적용됩니다. 고속 보정을 하지 않으면 모든 속도에 100BPM 값이 적용됩니다.</p>
 <p class="m">🎵 음악 싱크는 맵 파일의 <b>offset</b>을 원작과 같은 방식으로 자동 적용합니다. 맵마다 따로 맞출 필요가 없고, 기기 지연은 위의 <b>입력 오프셋</b>(보정)만 쓰면 됩니다.</p>
 <div class="m">내 맵 보관함 (탭하면 바로 선택됩니다 · ✕로 삭제)</div>
 <div class="bl" id="bl"></div>
 <button id="go" class="btn">시작</button>
 <div id="msg"></div>
+<p class="m">0.11.5: 타일 폭을 조금 키움(원작 화면 비율에 가깝게).</p>
+<p class="m">0.11.4: 미드스핀 타일을 집 모양 오각형으로 변경.</p>
+<p class="m">0.11.3: 오프셋 모두 0 초기화 버튼 추가. 타일과 외곽선을 원작 두께에 가깝게 얇게 조정(빠른 삼각형 패턴이 보이도록).</p>
 <p class="m">0.11.2: 오프셋 보정이 한 박(예: 100BPM에서 600ms) 넘게 늦게 눌러도 정확히 측정되도록 수정. 보정 범위 ±1000ms.</p>
 <p class="m">0.11.1: 인터넷에 연결되어 있으면 시작할 때 새 버전을 확인하고, 있으면 업데이트할지 물어봅니다. 오프라인이면 마지막으로 설치된 버전으로 실행합니다.</p>
 <p class="m">0.11.0: 내장 맵을 모두 제거하고, 불러온 맵(.adofai+곡 / zip)을 기기 안에 저장하는 맵 보관함을 추가. 이름을 Custom Level Player로 변경.</p>
@@ -142,6 +146,7 @@ $('#fxq').addEventListener('change',()=>{sv('adofai-fxq',$('#fxq').value);size()
 $('#bloom').addEventListener('change',()=>sv('adofai-bloom',$('#bloom').checked?'1':'0'));
 $('#cal').oninput=e=>{$('#cv').textContent=e.target.value;sv('adofai-cal',e.target.value)};
 $('#cal2').oninput=e=>{fastSet=true;setFastTxt();sv('adofai-cal2',e.target.value)};
+$('#cz').onclick=()=>{$('#cal').value=0;$('#cv').textContent='0';sv('adofai-cal',0);$('#cal2').value=0;fastSet=true;setFastTxt();sv('adofai-cal2',0)}; // 두 오프셋을 정확히 0으로
 $('#cv2').onclick=()=>{fastSet=false;try{localStorage.removeItem('adofai-cal2')}catch(e){}setFastTxt()}; // 탭하면 고속 보정 해제
 try{["adofai-md","adofai-offset-mode"].forEach(k=>localStorage.removeItem(k))}catch(e){} // 이전 버전의 음악 지연/기준 설정은 더 이상 쓰지 않음
 // 판정 방식·노페일·히트음은 저장해 둔다(오토는 실수 방지를 위해 저장하지 않음)
@@ -1096,16 +1101,16 @@ function addX(T){const i=G.cur,t=thAt(i,T)*R,P=G.m.pos[i];G.xs.push({x:P[0]+Math
 const rr=(x,y,w,h,r)=>{X.beginPath();X.roundRect?X.roundRect(x,y,w,h,r):X.rect(x,y,w,h)};
 // Reuse one path helper rather than allocating a closure for every visible tile every frame.
 const path3=(ctx,p0,c,p2)=>{ctx.beginPath();ctx.moveTo(p0[0],p0[1]);ctx.lineTo(c[0],c[1]);ctx.lineTo(p2[0],p2[1]);};
-// 타일 모양: 0 일반(굵은 선), 1 미드스핀(정오각형, 뾰족한 꼭짓점이 바깥), 2 되돌아가는 타일(끝이 둥근 막대)
+// 타일 모양: 0 일반(굵은 선), 1 미드스핀(집 모양 오각형, 뾰족한 쪽이 바깥), 2 되돌아가는 타일(끝이 둥근 막대)
 const tileKind=(m,j,n)=>{if(j<=0||j>=n)return 0;if(m.mid[j])return 1;const d=((m.eff[j]-m.eff[j-1])%360+360)%360;return Math.abs(d-180)<.01?2:0};
 // g: 외곽선용으로 키우는 두께. 앞 타일과 맞닿는 밑변(p0)은 키우지 않아 이음새를 덮지 않는다.
 function tileShape(ctx,kind,c,p0,g){
   let ux=(c[0]-p0[0])*2,uy=(c[1]-p0[1])*2;const L=Math.hypot(ux,uy)||1;ux/=L;uy/=L;
-  const vx=-uy,vy=ux,hw=.41+g,P=(a,b)=>[c[0]+ux*a+vx*b,c[1]+uy*a+vy*b];
+  const vx=-uy,vy=ux,hw=.36+g,P=(a,b)=>[c[0]+ux*a+vx*b,c[1]+uy*a+vy*b];
   ctx.beginPath();
-  if(kind===1){ // 정오각형: 뾰족한 꼭짓점이 바깥(도착 방향), 평평한 밑변이 앞 타일 쪽
-    const R=.5+g*1.24;
-    for(let k=0;k<5;k++){const t=k*2*Math.PI/5,q=P(R*Math.cos(t),R*Math.sin(t));k?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])}
+  if(kind===1){ // 미드스핀: '집 모양' 오각형. 밑변은 앞 타일 쪽, 뾰족한 지붕이 진행(도착) 방향
+    const pts=[[-.36,-hw],[-.36,hw],[.08,hw],[.36+g*1.4,0],[.08,-hw]];
+    pts.forEach((q,k)=>{const r=P(q[0],q[1]);k?ctx.lineTo(r[0],r[1]):ctx.moveTo(r[0],r[1])});
   }else{
     const a=P(-.5,hw),b=P(0,hw),e=P(-.5,-hw),av=Math.atan2(vy,vx);
     ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.arc(c[0],c[1],hw,av,av-Math.PI,true);ctx.lineTo(e[0],e[1]);
@@ -1149,7 +1154,7 @@ function drawTwirl(ctx,x,y,dir,scale=1){
   ctx.beginPath();ctx.moveTo(ex+tx*hl,ey+ty*hl);ctx.lineTo(ex+nx*hw,ey+ny*hw);ctx.lineTo(ex-nx*hw,ey-ny*hw);ctx.closePath();ctx.fillStyle=color;ctx.fill();
   ctx.restore();
 }
-// 변속 아이콘: 파란 달팽이=감속, 빨간 토끼=가속. (x,y)=타일 중심, 가로 약 .5칸·세로 약 .4칸(트랙 폭 .82 안에 여유 있게).
+// 변속 아이콘: 파란 달팽이=감속, 빨간 토끼=가속. (x,y)=타일 중심, 가로 약 .5칸·세로 약 .4칸(트랙 폭 .72 안에 들어가는 크기).
 function drawSpeedIcon(ctx,x,y,fast,scale=1){
   const S=.5*scale,col=fast?'#e23a32':'#2f55d6',hi=fast?'#ff8a80':'#7fa0ff';
   ctx.save();ctx.translate(x,y);ctx.scale(S,S);ctx.lineCap='round';ctx.lineJoin='round';
@@ -1532,21 +1537,21 @@ function draw(T){
     if(cap||kind){
       const q0=cap?(cap===1?p2:p0):p0,kd=cap?2:kind;
       if(neon){
-        if(z>3||highContrast){tileShape(X,kd,c,q0,.1);X.globalAlpha=highContrast?tileAlpha:tileAlpha*.22;X.fillStyle=highContrast?sepColor:shownColor;X.fill();}
+        if(z>3||highContrast){tileShape(X,kd,c,q0,.05);X.globalAlpha=highContrast?tileAlpha:tileAlpha*.22;X.fillStyle=highContrast?sepColor:shownColor;X.fill();}
         tileShape(X,kd,c,q0,0);X.globalAlpha=tileAlpha;X.fillStyle=shownColor;X.fill();
-        tileShape(X,kd,c,q0,-.085);X.globalAlpha=tileAlpha;X.fillStyle=core;X.fill();
+        tileShape(X,kd,c,q0,-.065);X.globalAlpha=tileAlpha;X.fillStyle=core;X.fill();
       }else{
-        if(outline&&z>3){tileShape(X,kd,c,q0,.1);X.globalAlpha=tileAlpha;X.fillStyle=edge;X.fill();}
-        tileShape(X,kd,c,q0,sty==='minimal'?-.12:0);X.globalAlpha=tileAlpha;X.fillStyle=shownColor;X.fill();
+        if(outline&&z>3){tileShape(X,kd,c,q0,.05);X.globalAlpha=tileAlpha;X.fillStyle=edge;X.fill();}
+        tileShape(X,kd,c,q0,sty==='minimal'?-.1:0);X.globalAlpha=tileAlpha;X.fillStyle=shownColor;X.fill();
       }
     }else{
       if(neon){
-        if(z>3||highContrast){path3(X,p0,c,p2);X.strokeStyle=highContrast?sepColor:shownColor;X.lineWidth=1.02;X.globalAlpha=highContrast?tileAlpha:tileAlpha*.22;X.stroke();}
-        path3(X,p0,c,p2);X.globalAlpha=tileAlpha;X.strokeStyle=shownColor;X.lineWidth=.82;X.stroke();
-        path3(X,p0,c,p2);X.globalAlpha=tileAlpha;X.strokeStyle=core;X.lineWidth=.64;X.stroke();
+        if(z>3||highContrast){path3(X,p0,c,p2);X.strokeStyle=highContrast?sepColor:shownColor;X.lineWidth=.82;X.globalAlpha=highContrast?tileAlpha:tileAlpha*.22;X.stroke();}
+        path3(X,p0,c,p2);X.globalAlpha=tileAlpha;X.strokeStyle=shownColor;X.lineWidth=.72;X.stroke();
+        path3(X,p0,c,p2);X.globalAlpha=tileAlpha;X.strokeStyle=core;X.lineWidth=.56;X.stroke();
       }else{
-        if(outline&&z>3){path3(X,p0,c,p2);X.strokeStyle=edge;X.lineWidth=1.02;X.globalAlpha=tileAlpha;X.stroke();}
-        path3(X,p0,c,p2);X.globalAlpha=tileAlpha;X.strokeStyle=shownColor;X.lineWidth=sty==='minimal'?.6:.82;X.stroke();
+        if(outline&&z>3){path3(X,p0,c,p2);X.strokeStyle=edge;X.lineWidth=.82;X.globalAlpha=tileAlpha;X.stroke();}
+        path3(X,p0,c,p2);X.globalAlpha=tileAlpha;X.strokeStyle=shownColor;X.lineWidth=sty==='minimal'?.52:.72;X.stroke();
       }
     }
     // Tile dividers remain visible when zoomed out. Spatially moved tiles get a stronger
@@ -1555,7 +1560,7 @@ function draw(T){
       X.globalAlpha=tileAlpha*(highContrast?.72:spatiallyMoved?.58:.35);
       X.strokeStyle=(highContrast||spatiallyMoved)?sepColor:mixH(tileColor,'#000000',.55);
       X.lineWidth=Math.max(.025,Math.min(.075,.72/Math.max(1,z)));
-      X.beginPath();X.moveTo(p0[0]-ay*.41,p0[1]+ax*.41);X.lineTo(p0[0]+ay*.41,p0[1]-ax*.41);X.stroke();}
+      X.beginPath();X.moveTo(p0[0]-ay*.36,p0[1]+ax*.36);X.lineTo(p0[0]+ay*.36,p0[1]-ax*.36);X.stroke();}
     X.globalAlpha=tileAlpha;
     if(j<n&&m.flip[j])drawTwirl(X,c[0],c[1],m.cw[j],1);
     // 변속 아이콘은 해당 타일에 직접 표시: 빨간 토끼=가속, 파란 달팽이=감속.
@@ -1813,7 +1818,7 @@ $('#lv').onchange=()=>{startTile=0;$('#st').textContent='';markB()};
 // 앱(APK)의 시작 화면이 window.CLP_UPDATE_URL 을 넣어 준다. 일반 브라우저에서 열면 이 기능은 꺼진다.
 // 새 버전을 받아 두면(IndexedDB) 다음 실행부터 앱이 그 버전을 먼저 쓰고, 실행에 실패하면 기본 버전으로 자동 복구한다.
 (()=>{
-const APP_VER='0.11.2',U=window.CLP_UPDATE_URL;
+const APP_VER='0.11.5',U=window.CLP_UPDATE_URL;
 const vp=t=>{const m=new RegExp('<'+'!--CLP-PLAYER ([0-9.]+)-->').exec(t);return m&&m[1]};
 const cmp=(a,b)=>{const x=a.split('.').map(Number),y=b.split('.').map(Number);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d>0?1:-1}return 0};
 const idb=()=>new Promise((res,rej)=>{const q=indexedDB.open('clp-update',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
