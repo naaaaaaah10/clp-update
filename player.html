@@ -1,8 +1,8 @@
 <!doctype html>
-<!--CLP-PLAYER 0.11.6-->
+<!--CLP-PLAYER 0.11.7-->
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Custom Level Player 0.11.6</title>
+<title>Custom Level Player 0.11.7</title>
 <style>
 :root{--bg:#f4f4f6;--fg:#15151a;--card:#fff;--ac:#e8453c;--mut:#777;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101015;--fg:#eee;--card:#1b1b23;--mut:#999}}
@@ -22,12 +22,12 @@ input[type=range]{width:100%}
 #msg{color:var(--ac);font-size:14px;margin-top:8px}
 #c{position:fixed;inset:0;width:100%;height:100%;display:none;touch-action:none;background:#000}
 #hud{display:none;position:fixed;inset:0;pointer-events:none;color:#fff;text-shadow:0 1px 4px #000}
-#x{pointer-events:auto;position:absolute;left:10px;top:calc(10px + env(safe-area-inset-top,0px));background:#0008;color:#fff;border:0;border-radius:10px;width:40px;height:40px;font-size:18px}
-#ap{display:none;pointer-events:auto;position:absolute;right:10px;top:calc(10px + env(safe-area-inset-top,0px));background:var(--ac);color:#fff;border:0;border-radius:10px;height:40px;padding:0 16px;font-size:16px}
-#cm{position:absolute;top:62%;width:100%;text-align:center;font-size:18px;white-space:pre-line}
-.dleg{position:absolute;z-index:2;left:50%;top:calc(54px + env(safe-area-inset-top,0px));transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:9px;max-width:calc(100% - 16px);box-sizing:border-box;padding:5px 8px;border-radius:10px;background:#000b;color:#fff;font-size:11px;line-height:1.35;white-space:nowrap;text-shadow:none;pointer-events:none}
+#x{pointer-events:auto;position:absolute;left:calc(10px*var(--u,1));top:calc(calc(10px*var(--u,1)) + env(safe-area-inset-top,0px));background:#0008;color:#fff;border:0;border-radius:calc(10px*var(--u,1));width:calc(40px*var(--u,1));height:calc(40px*var(--u,1));font-size:calc(18px*var(--u,1))}
+#ap{display:none;pointer-events:auto;position:absolute;right:calc(10px*var(--u,1));top:calc(calc(10px*var(--u,1)) + env(safe-area-inset-top,0px));background:var(--ac);color:#fff;border:0;border-radius:calc(10px*var(--u,1));height:calc(40px*var(--u,1));padding:0 calc(16px*var(--u,1));font-size:calc(16px*var(--u,1))}
+#cm{position:absolute;top:62%;width:100%;text-align:center;font-size:calc(18px*var(--u,1));white-space:pre-line}
+.dleg{position:absolute;z-index:2;left:50%;top:calc(calc(54px*var(--u,1)) + env(safe-area-inset-top,0px));transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:calc(9px*var(--u,1));max-width:calc(100% - 16px);box-sizing:border-box;padding:calc(5px*var(--u,1)) calc(8px*var(--u,1));border-radius:calc(10px*var(--u,1));background:#000b;color:#fff;font-size:calc(11px*var(--u,1));line-height:1.35;white-space:nowrap;text-shadow:none;pointer-events:none}
 #jt{display:none}
-#cb{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));width:100%;text-align:center;font-size:18px}
+#cb{position:absolute;top:calc(calc(14px*var(--u,1)) + env(safe-area-inset-top,0px));width:100%;text-align:center;font-size:calc(18px*var(--u,1))}
 #bar{position:absolute;left:0;right:0;bottom:0;height:4px;background:#fff3}
 #bar i{display:block;height:100%;width:0;background:var(--ac)}
 #res{display:none;position:fixed;inset:0;background:#000d;color:#fff;align-items:center;justify-content:center;flex-direction:column;text-align:center;font-size:18px;line-height:1.8}
@@ -39,8 +39,8 @@ input[type=range]{width:100%}
 .rr{display:flex;justify-content:center;gap:1.1em}
 .rr span{min-width:8.6em;white-space:nowrap}
 .rr i{font-style:normal}
-#rb{pointer-events:auto;position:absolute;right:10px;top:calc(10px + env(safe-area-inset-top,0px));background:#0008;color:#fff;border:0;border-radius:10px;height:40px;padding:0 16px;font-size:15px;text-shadow:none}
-#cd{position:absolute;top:34%;width:100%;text-align:center;font-size:clamp(30px,13vw,72px);font-weight:800;line-height:1.2}
+#rb{pointer-events:auto;position:absolute;right:calc(10px*var(--u,1));top:calc(calc(10px*var(--u,1)) + env(safe-area-inset-top,0px));background:#0008;color:#fff;border:0;border-radius:calc(10px*var(--u,1));height:calc(40px*var(--u,1));padding:0 calc(16px*var(--u,1));font-size:calc(15px*var(--u,1));text-shadow:none}
+#cd{position:absolute;top:34%;width:100%;text-align:center;font-size:calc(clamp(30px,13vw,72px)*var(--u,1));font-weight:800;line-height:1.2}
 #pk{display:none;position:fixed;inset:0;background:#000;color:#fff}
 #pc{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
 #pb{position:absolute;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:#000c;text-align:center}
@@ -54,7 +54,7 @@ input[type=range]{width:100%}
 </style></head>
 <body>
 <div id="menu">
-<h1>Custom Level Player 0.11.6</h1>
+<h1>Custom Level Player 0.11.7</h1>
 <p class="m">.adofai 파일과 곡 파일(ogg·mp3·wav)을 함께 선택하거나, 레벨 .zip 을 선택하세요. 파일은 기기 안에서만 처리되며, 한 번 선택한 맵은 아래 보관함에 자동 저장됩니다.</p>
 <div class="btn pick">파일 선택<input id="f" type="file" multiple></div>
 <div id="fl" class="m"></div>
@@ -95,6 +95,7 @@ input[type=range]{width:100%}
 <div class="bl" id="bl"></div>
 <button id="go" class="btn">시작</button>
 <div id="msg"></div>
+<p class="m">0.11.7: 기기 화면 높이에 맞춰 UI(카운트다운·콤보·판정 바·판정 글씨·방향 안내·버튼) 크기를 조절해 어떤 기종이든 갤럭시 탭과 같은 비율로 보이게 함.</p>
 <p class="m">0.11.6: 맵 파일에 쉼표가 빠져 있어도(예: ] 뒤 "decorations") 불러오도록 파서를 보강.</p>
 <p class="m">0.11.5: 타일 폭을 조금 키움(원작 화면 비율에 가깝게).</p>
 <p class="m">0.11.4: 미드스핀 타일을 집 모양 오각형으로 변경.</p>
@@ -660,7 +661,12 @@ function sim(L){
     bg:hx(S.backgroundColor,'000000'),tc:hx(S.trackColor,'debb7b'),style:S.trackStyle||'Standard',tileBaseMoved:ini.map(v=>Math.abs(v[0])>.015||Math.abs(v[1])>.015||Math.abs(v[2])>.05||Math.abs(v[3]-100)>.5),col:['#ff4d4d','#4d7dff']};
 }
 const cv=$('#c'),X=cv.getContext('2d'),fxCanvas=document.createElement('canvas'),fxCtx=fxCanvas.getContext('2d');let G=null;
-function size(){const d=renderDpr();cv.width=Math.max(1,Math.round(innerWidth*d));cv.height=Math.max(1,Math.round(innerHeight*d));if(fxCanvas.width!==cv.width||fxCanvas.height!==cv.height){fxCanvas.width=cv.width;fxCanvas.height=cv.height}}
+// UI 크기 기준: 화면 높이(= 타일 크기 기준 min(W,H)/10 와 같은 축). 기준 기종(갤럭시 탭 S8+ 가로, 높이 약 920 css px)에서 1.0,
+// 높이가 낮은 폰에서는 UI(글씨·판정 바·버튼)도 같은 비율로 줄여 어떤 기기든 탭과 같은 비율로 보이게 한다.
+const UI_REF_H=920;let UIS=1;
+function uiScale(){UIS=Math.max(.4,Math.min(1.6,innerHeight/UI_REF_H));try{document.documentElement.style.setProperty('--u',UIS.toFixed(3))}catch(e){}return UIS}
+uiScale();
+function size(){uiScale();const d=renderDpr();cv.width=Math.max(1,Math.round(innerWidth*d));cv.height=Math.max(1,Math.round(innerHeight*d));if(fxCanvas.width!==cv.width||fxCanvas.height!==cv.height){fxCanvas.width=cv.width;fxCanvas.height=cv.height}}
 addEventListener('resize',()=>{if(G&&G.fin)return;size()});
 function EZ(nm){
   const q=/^(In|Out|InOut)(Sine|Quad|Cubic|Quart|Quint|Expo|Circ|Back|Elastic|Bounce)$/.exec(nm||'');if(!q)return x=>x;
@@ -1615,7 +1621,7 @@ function draw(T){
   X.restore();
   // 타일 위 판정 라벨(월드 좌표에 붙이되 글씨는 화면 기준으로 똑바로, 일정 크기로 그린다)
   if(G.jl&&G.jl.length&&!G.cal){
-    const nowJ=performance.now(),dj=renderDpr();
+    const nowJ=performance.now(),dj=renderDpr()*UIS;
     X.shadowBlur=0;X.shadowColor='transparent';
     for(let k=G.jl.length-1;k>=0;k--){
       const e=G.jl[k],age=nowJ-e.t;
@@ -1633,7 +1639,7 @@ function draw(T){
   }
   X.restore();X.globalAlpha=1;X.shadowBlur=0;X.shadowColor='transparent';
   if(G.lw&&!G.cal){
-    const lw=G.lw,d=renderDpr(),w=Math.min(W*.86,520*d),y=H-58*d,h=12*d,mx=Math.max(75,lw.v*lw.b*1.15);
+    const lw=G.lw,d=renderDpr()*UIS,w=Math.min(W*.86,520*d),y=H-58*d,h=12*d,mx=Math.max(75,lw.v*lw.b*1.15);
     const px=g=>W/2+Math.max(-mx,Math.min(mx,g))/mx*(w/2);
     X.fillStyle='rgba(255,255,255,.14)';X.fillRect(W/2-w/2,y,w,h);
     for(const [t,c] of [[lw.v,'#fd5'],[lw.e,'#cf6'],[lw.p,'#6f6']]){const g=t*lw.b;X.fillStyle=c;X.globalAlpha=.8;X.fillRect(px(-g),y,px(g)-px(-g),h)}
@@ -1821,7 +1827,7 @@ $('#lv').onchange=()=>{startTile=0;$('#st').textContent='';markB()};
 // 앱(APK)의 시작 화면이 window.CLP_UPDATE_URL 을 넣어 준다. 일반 브라우저에서 열면 이 기능은 꺼진다.
 // 새 버전을 받아 두면(IndexedDB) 다음 실행부터 앱이 그 버전을 먼저 쓰고, 실행에 실패하면 기본 버전으로 자동 복구한다.
 (()=>{
-const APP_VER='0.11.6',U=window.CLP_UPDATE_URL;
+const APP_VER='0.11.7',U=window.CLP_UPDATE_URL;
 const vp=t=>{const m=new RegExp('<'+'!--CLP-PLAYER ([0-9.]+)-->').exec(t);return m&&m[1]};
 const cmp=(a,b)=>{const x=a.split('.').map(Number),y=b.split('.').map(Number);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d>0?1:-1}return 0};
 const idb=()=>new Promise((res,rej)=>{const q=indexedDB.open('clp-update',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
