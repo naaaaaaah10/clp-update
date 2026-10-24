@@ -1,8 +1,8 @@
 <!doctype html>
-<!--CLP-PLAYER 0.11.7-->
+<!--CLP-PLAYER 0.11.10-->
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Custom Level Player 0.11.7</title>
+<title>Custom Level Player 0.11.10</title>
 <style>
 :root{--bg:#f4f4f6;--fg:#15151a;--card:#fff;--ac:#e8453c;--mut:#777;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101015;--fg:#eee;--card:#1b1b23;--mut:#999}}
@@ -54,7 +54,7 @@ input[type=range]{width:100%}
 </style></head>
 <body>
 <div id="menu">
-<h1>Custom Level Player 0.11.7</h1>
+<h1>Custom Level Player 0.11.10</h1>
 <p class="m">.adofai 파일과 곡 파일(ogg·mp3·wav)을 함께 선택하거나, 레벨 .zip 을 선택하세요. 파일은 기기 안에서만 처리되며, 한 번 선택한 맵은 아래 보관함에 자동 저장됩니다.</p>
 <div class="btn pick">파일 선택<input id="f" type="file" multiple></div>
 <div id="fl" class="m"></div>
@@ -82,6 +82,8 @@ input[type=range]{width:100%}
 <div class="m">판정 방식 (원작 기준)</div>
 <select id="jm"><option value="mob">모바일 (각도 판정 · 최소 ±50/70/90ms)</option><option value="nor">PC 보통</option><option value="len">PC 느슨</option><option value="str">PC 엄격</option></select>
 <p class="m">원작 방식: 판정은 타일의 각도 오차(±30°/±45°/±60°)를 BPM으로 시간 환산합니다. 느린 BPM에서는 허용 ms가 넓어지고, 빠른 BPM에서는 모드별 최소 ms(모바일 50/70/90 · PC 보통 25/30/65 · 느슨 25/30/91 · 엄격 25/30/40)에서 제한됩니다.</p>
+<button id="ofb" class="btn" style="background:var(--card);color:var(--fg);border:1px solid var(--mut)">입력 오프셋 설정 ▾</button>
+<div id="ofp" style="display:none">
 <div class="m">입력 오프셋 <b id="cv">0</b>ms</div>
 <input type="range" id="cal" min="-1000" max="1000" value="0">
 <button id="cb2" class="btn" style="background:var(--card);color:var(--fg);border:1px solid var(--mut)">오프셋 보정 (100BPM 반복)</button>
@@ -90,11 +92,17 @@ input[type=range]{width:100%}
 <button id="cb3" class="btn" style="background:var(--card);color:var(--fg);border:1px solid var(--mut)">고속 오프셋 보정 (200BPM 반복)</button>
 <button id="cz" class="btn" style="background:var(--card);color:var(--fg);border:1px solid var(--mut)">오프셋 모두 0으로 초기화</button>
 <p class="m">사람은 느린 박자에서는 박보다 일찍, 빠른 박자에서는 박에 더 가깝게 누르는 경향이 있어 100BPM에서 맞춘 오프셋이 빠른 구간에서는 어긋나 느껴질 수 있습니다. 두 지점(100BPM / 200BPM)을 각각 보정하면 맵의 실제 BPM에 맞춰 그 사이 값이 자동으로 적용됩니다. 고속 보정을 하지 않으면 모든 속도에 100BPM 값이 적용됩니다.</p>
+</div>
 <p class="m">🎵 음악 싱크는 맵 파일의 <b>offset</b>을 원작과 같은 방식으로 자동 적용합니다. 맵마다 따로 맞출 필요가 없고, 기기 지연은 위의 <b>입력 오프셋</b>(보정)만 쓰면 됩니다.</p>
+<div class="opt"><label><input type="checkbox" id="kvon"> 키뷰어 표시 (키보드로 누른 키 · 잔상)</label></div>
+<button id="kvset" class="btn" style="background:var(--card);color:var(--fg);border:1px solid var(--mut)">키뷰어 설정 (키 · 크기 · 위치 · 잔상)</button>
 <div class="m">내 맵 보관함 (탭하면 바로 선택됩니다 · ✕로 삭제)</div>
 <div class="bl" id="bl"></div>
 <button id="go" class="btn">시작</button>
 <div id="msg"></div>
+<p class="m">0.11.10: 키뷰어 설정에 '등록한 키만 입력' 추가, 입력 오프셋 설정을 접이식으로, 실패 후 화면 터치/아무 키로 다시 하기.</p>
+<p class="m">0.11.9: 키뷰어의 키를 터치하면 해당 키에 불이 들어오고 잔상이 올라감.</p>
+<p class="m">0.11.8: 키뷰어 추가(키보드로 원하는 키를 순서대로 등록, 누르는 동안 불이 켜지고 위로 잔상이 올라감. 크기·위치·잔상 높이/속도 설정).</p>
 <p class="m">0.11.7: 기기 화면 높이에 맞춰 UI(카운트다운·콤보·판정 바·판정 글씨·방향 안내·버튼) 크기를 조절해 어떤 기종이든 갤럭시 탭과 같은 비율로 보이게 함.</p>
 <p class="m">0.11.6: 맵 파일에 쉼표가 빠져 있어도(예: ] 뒤 "decorations") 불러오도록 파서를 보강.</p>
 <p class="m">0.11.5: 타일 폭을 조금 키움(원작 화면 비율에 가깝게).</p>
@@ -107,6 +115,18 @@ input[type=range]{width:100%}
 <p class="m">0.10.8: 플레이어 기준 카메라 이동 중 타일이 밀려나는 거리만큼 오프셋을 보정(Nyan Cat에서 카메라가 너무 앞서 가던 문제). 0.10.7: 카메라가 MoveTrack으로 옮겨진 타일/플레이어를 따라가도록 수정하고, LastPosition 카메라 이벤트가 추적 대상을 유지하도록 변경. 0.10.6: 같은 시각의 MoveTrack 이벤트가 서로 다른 항목(x/y/회전/크기/투명도)을 지정할 때 항목별로 적용하도록 수정(타일이 안 보이고 공만 움직이던 문제). 0.10.5: AnimateTrack의 음수 beatsBehind를 0으로 깎지 않고 지나온 타일을 유지하도록 수정. 0.10.4: 카메라 좌표 기준을 분리하고, 타일 숨김·표시 규칙이 이동 애니메이션에 의해 무시되지 않도록 보정했습니다. 숫자·텍스트·말풍선 핵심 연출 보호와 성능 조절은 유지됩니다. 핵심 연출은 자동 성능 보호 설정과 관계없이 가까운 구간부터 우선 로딩하고, 전체 카메라 장식을 시작 때 한꺼번에 큐에 넣지 않도록 했습니다. 기본 타일·카메라 처리 및 특수 이벤트의 원작 일치 여부는 계속 검증 중입니다.</p>
 </div>
 <canvas id="c"></canvas>
+<canvas id="kvc" style="display:none;position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:4"></canvas>
+<div id="kvo" style="display:none;position:fixed;inset:0;z-index:9000;background:#000d;color:#fff">
+<canvas id="kvp" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none"></canvas>
+<div style="position:absolute;left:0;right:0;top:0;padding:10px 14px;background:#000b;font-size:13px">
+<div id="kvh" style="margin-bottom:8px;line-height:1.4"></div>
+<div style="display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center">
+<label>키 크기 <b id="kvsv"></b> <input type="range" id="kvs" min="24" max="140" style="width:130px;vertical-align:middle"></label>
+<label>잔상 높이 <b id="kvtv"></b> <input type="range" id="kvt" min="40" max="800" style="width:130px;vertical-align:middle"></label>
+<label>잔상 속도 <b id="kvvv"></b> <input type="range" id="kvv" min="100" max="1500" style="width:130px;vertical-align:middle"></label>
+</div>
+<div style="display:flex;gap:8px;margin-top:8px;align-items:center"><button id="kvr" style="padding:8px 12px;border-radius:8px;border:1px solid #888;background:#222;color:#fff">키 다시 입력</button><button id="kvok" style="padding:8px 16px;border-radius:8px;border:0;background:var(--ac);color:#fff;font-weight:700">확인</button><button id="kvx" style="padding:8px 12px;border-radius:8px;border:1px solid #888;background:#222;color:#fff">취소</button><label style="margin-left:6px"><input type="checkbox" id="kvonly"> 등록한 키만 입력(키보드)</label><span style="color:#aaa">키 묶음은 드래그로 이동</span></div>
+</div></div>
 <div id="hud"><button id="x">✕</button><button id="ap">적용</button><div id="cm"></div><div id="dirLegend" class="dleg"><span style="color:#ff3030">↻ 시계</span><span style="color:#287dff">↺ 반시계</span></div><div id="cd"></div><div id="jt"></div><div id="cb"></div><div id="bar"><i></i></div></div>
 <div id="res"></div>
 <div id="rs"></div>
@@ -148,6 +168,7 @@ $('#fxq').addEventListener('change',()=>{sv('adofai-fxq',$('#fxq').value);size()
 $('#bloom').addEventListener('change',()=>sv('adofai-bloom',$('#bloom').checked?'1':'0'));
 $('#cal').oninput=e=>{$('#cv').textContent=e.target.value;sv('adofai-cal',e.target.value)};
 $('#cal2').oninput=e=>{fastSet=true;setFastTxt();sv('adofai-cal2',e.target.value)};
+$('#ofb').onclick=()=>{const p=$('#ofp'),o=p.style.display==='none';p.style.display=o?'block':'none';$('#ofb').textContent='입력 오프셋 설정 '+(o?'▴':'▾')};
 $('#cz').onclick=()=>{$('#cal').value=0;$('#cv').textContent='0';sv('adofai-cal',0);$('#cal2').value=0;fastSet=true;setFastTxt();sv('adofai-cal2',0)}; // 두 오프셋을 정확히 0으로
 $('#cv2').onclick=()=>{fastSet=false;try{localStorage.removeItem('adofai-cal2')}catch(e){}setFastTxt()}; // 탭하면 고속 보정 해제
 try{["adofai-md","adofai-offset-mode"].forEach(k=>localStorage.removeItem(k))}catch(e){} // 이전 버전의 음악 지연/기준 설정은 더 이상 쓰지 않음
@@ -1095,9 +1116,13 @@ function tap(ts){
   if(d>w.v){jd(null);return}
   jd(d);
 }
-cv.addEventListener('pointerdown',e=>{e.preventDefault();if(e.button>0)return;tap(e.timeStamp)});
+const canRetry=()=>G&&G.fin&&G.failAt&&performance.now()-G.failAt>450&&!busy; // 실패 직후 0.45초는 무시(실패를 만든 입력이 바로 재시작이 되지 않게)
+function retry(){hideRs();go()}
+cv.addEventListener('pointerdown',e=>{e.preventDefault();if(e.button>0)return;if(G&&G.fin&&G.failAt){if(canRetry())retry();return}tap(e.timeStamp)});
 addEventListener('keydown',e=>{
+  if(G&&G.fin&&G.failAt&&!e.repeat&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&e.key!=='Escape'&&!/^(Shift|Control|Alt|Meta)/.test(e.code||'')&&(!window.CLP_KEYOK||window.CLP_KEYOK(e))){e.preventDefault();if(canRetry())retry();return}
   if(!G||G.done||e.repeat||e.ctrlKey||e.metaKey||e.altKey||e.key==='Escape')return;
+  if(window.CLP_KEYOK&&!window.CLP_KEYOK(e))return; // 키뷰어 '등록한 키만 입력' 사용 시
   if(e.key===' ')e.preventDefault();tap(e.timeStamp);
 });
 function thAt(i,T){
@@ -1745,7 +1770,7 @@ function fin(ok){
   if(!G||G.done)return;stop();
   const g=G,c=g.cnt,j=g.jc||{},v=k=>j[k]||0,tot=Math.max(1,g.req.length),
     acc=((c[0]+c[1]*.75+c[2]*.4)/tot*100).toFixed(2),prog=Math.round(Math.min(1,g.q/tot)*100);
-  g.fin=1;
+  g.fin=1;g.failAt=ok?0:performance.now();
   for(const e of['#jt','#cb','#cd','#cm'])$(e).textContent='';
   const row=a=>'<div class="rr">'+a.map(x=>`<span><i>${x[0]}:</i> <b style="color:${x[2]}">${x[1]}</b></span>`).join('')+'</div>';
   const rs=$('#rs');rs.textContent='';rs.style.display='flex';
@@ -1827,7 +1852,7 @@ $('#lv').onchange=()=>{startTile=0;$('#st').textContent='';markB()};
 // 앱(APK)의 시작 화면이 window.CLP_UPDATE_URL 을 넣어 준다. 일반 브라우저에서 열면 이 기능은 꺼진다.
 // 새 버전을 받아 두면(IndexedDB) 다음 실행부터 앱이 그 버전을 먼저 쓰고, 실행에 실패하면 기본 버전으로 자동 복구한다.
 (()=>{
-const APP_VER='0.11.7',U=window.CLP_UPDATE_URL;
+const APP_VER='0.11.10',U=window.CLP_UPDATE_URL;
 const vp=t=>{const m=new RegExp('<'+'!--CLP-PLAYER ([0-9.]+)-->').exec(t);return m&&m[1]};
 const cmp=(a,b)=>{const x=a.split('.').map(Number),y=b.split('.').map(Number);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d>0?1:-1}return 0};
 const idb=()=>new Promise((res,rej)=>{const q=indexedDB.open('clp-update',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
@@ -1859,6 +1884,109 @@ async function check(){
 if(window.CLP_ROLLBACK)toast('업데이트한 버전이 실행되지 않아 기본 버전으로 되돌렸습니다',6000);
 setTimeout(()=>{try{localStorage.removeItem('clp-trying')}catch(e){}},2500);   // 여기까지 오면 이 버전은 정상 실행된 것
 setTimeout(()=>{check().catch(e=>console.warn(e))},1200);
+})();
+</script>
+<script>
+// ── 키뷰어 ──────────────────────────────────────────────────
+// 키보드로 원하는 키를 순서대로 입력(왼쪽부터 한 줄) → 누르는 동안 불(흰색 채움)이 켜지고, 키 위로 하얀 잔상이 올라가다 사라진다.
+// 크기·위치(드래그, 키 묶음 전체)·잔상 높이·잔상 속도는 설정 화면에서 조절. 설정은 기기에 저장된다.
+(()=>{
+const q=s=>document.querySelector(s),KEY='clp-kv';
+const DEF={on:false,only:false,keys:[],cx:.5,cy:.84,size:56,trailH:260,speed:520};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function norm(o){const r={...DEF};if(o&&typeof o==='object'){
+  r.on=!!o.on;r.only=!!o.only;if(Array.isArray(o.keys))r.keys=o.keys.filter(k=>k&&typeof k.code==='string'&&typeof k.label==='string').slice(0,16).map(k=>({code:k.code,label:k.label.slice(0,4)}));
+  for(const [k,a,b] of [['cx',0,1],['cy',0,1],['size',20,160],['trailH',30,900],['speed',80,1600]])if(isFinite(+o[k]))r[k]=clamp(+o[k],a,b)}
+  return r}
+let KV=DEF;try{KV=norm(JSON.parse(localStorage.getItem(KEY)||'null'))}catch(e){KV=norm(null)}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(KV))}catch(e){}};
+function lab(e){const c=e.code||'';
+  if(/^Key[A-Z]$/.test(c))return c[3];if(/^Digit\d$/.test(c))return c[5];if(/^Numpad\d$/.test(c))return 'N'+c[6];
+  const m={Semicolon:';',Comma:',',Period:'.',Slash:'/',Quote:"'",BracketLeft:'[',BracketRight:']',Backslash:'\\',Minus:'-',Equal:'=',Backquote:'`',Space:'␣',ArrowUp:'↑',ArrowDown:'↓',ArrowLeft:'←',ArrowRight:'→',ShiftLeft:'⇧',ShiftRight:'⇧',Enter:'⏎',Tab:'⇥',CapsLock:'⇪',Backspace:'⌫'};
+  return m[c]||(e.key&&e.key.length===1?e.key.toUpperCase():c.slice(0,3))}
+// 눌림/잔상 상태 (게임용·미리보기용을 각각 하나씩 만든다)
+function mk(){const down=new Set(),tr=new Map();
+  return{down,
+    press(code,now){if(down.has(code))return;down.add(code);let a=tr.get(code);if(!a)tr.set(code,a=[]);a.push({t0:now,t1:null})},
+    release(code,now){down.delete(code);const a=tr.get(code);if(a)for(let i=a.length-1;i>=0;i--)if(a[i].t1==null){a[i].t1=now;break}},
+    clear(now){for(const c of [...down])this.release(c,now)},
+    draw(ctx,W,H,d,st,now){
+      const n=st.keys.length;if(!n)return;
+      const s=st.size*d,gap=s*.2,tw=n*s+(n-1)*gap,x0=st.cx*W-tw/2,top=st.cy*H-s/2,y0=top-5*d,maxH=st.trailH*d,v=st.speed*d/1000;
+      ctx.save();ctx.lineJoin='round';
+      for(let i=0;i<n;i++){const k=st.keys[i],x=x0+i*(s+gap),a=tr.get(k.code);
+        if(a){for(let j=a.length-1;j>=0;j--){const t=a[j],yb=t.t1==null?y0:y0-(now-t.t1)*v,yt=Math.max(y0-(now-t.t0)*v,y0-maxH);
+          if(y0-yb>=maxH){a.splice(j,1);continue}
+          if(yb<=yt)continue;
+          const g=ctx.createLinearGradient(0,y0,0,y0-maxH);g.addColorStop(0,'rgba(255,255,255,.8)');g.addColorStop(1,'rgba(255,255,255,0)');
+          ctx.fillStyle=g;ctx.fillRect(x+s*.07,yt,s*.86,yb-yt)}}
+        const on=down.has(k.code),r=s*.18;
+        ctx.beginPath();ctx.roundRect?ctx.roundRect(x,top,s,s,r):ctx.rect(x,top,s,s);
+        if(on){ctx.fillStyle='#fff';ctx.fill()}
+        ctx.lineWidth=Math.max(1.5*d,s*.045);ctx.strokeStyle='#fff';ctx.shadowColor='rgba(0,0,0,.55)';ctx.shadowBlur=on?0:3*d;ctx.stroke();ctx.shadowBlur=0;
+        ctx.font='600 '+(k.label.length>1?s*.3:s*.44)+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillStyle=on?'#111':'#fff';if(!on){ctx.shadowColor='rgba(0,0,0,.55)';ctx.shadowBlur=3*d}ctx.fillText(k.label,x+s/2,top+s/2+s*.02);ctx.shadowBlur=0}
+      ctx.restore()}}}
+window.CLP_KEYOK=e=>!(KV.only&&KV.keys.length)||KV.keys.some(k=>k.code===e.code); // 게임 입력으로 쓸 수 있는 키인가
+const game=mk(),prev=mk();
+const kvc=q('#kvc'),kc=kvc.getContext('2d'),pc2=q('#kvp'),pcx=pc2.getContext('2d'),ov=q('#kvo');
+let ovOpen=false,tmp=null,cap=false,shown=false;
+const dpr=()=>Math.min(window.devicePixelRatio||1,2);
+function fit(c){const d=dpr(),w=Math.max(1,Math.round(innerWidth*d)),h=Math.max(1,Math.round(innerHeight*d));if(c.width!==w||c.height!==h){c.width=w;c.height=h}return d}
+const gameOn=()=>typeof G!=='undefined'&&G&&!G.done;
+// 입력
+addEventListener('keydown',e=>{
+  if(ovOpen){
+    if(e.key==='Escape'){e.preventDefault();closeOv(false);return}
+    if(e.ctrlKey||e.metaKey||e.altKey||!e.code||/^(Meta|Control|Alt)/.test(e.code))return;
+    e.preventDefault();e.stopImmediatePropagation();
+    if(cap&&!tmp.keys.some(k=>k.code===e.code)&&tmp.keys.length<16){tmp.keys.push({code:e.code,label:lab(e)});hint()}
+    if(!e.repeat)prev.press(e.code,performance.now());return}
+  if(!KV.on||!KV.keys.length||e.repeat||!gameOn())return;
+  if(KV.keys.some(k=>k.code===e.code))game.press(e.code,performance.now())
+},true);
+addEventListener('keyup',e=>{const t=performance.now();if(ovOpen){prev.release(e.code,t);return}game.release(e.code,t)},true);
+addEventListener('blur',()=>{const t=performance.now();game.clear(t);prev.clear(t)});
+// 터치: 키뷰어의 키 위를 누르면 그 키에 불이 들어온다(게임 입력은 화면 어디를 눌러도 이미 들어간다 — 여기서는 표시만).
+const tp=new Map(); // pointerId → code
+function hitKey(x,y){
+  const n=KV.keys.length,s=KV.size,gap=s*.2,tw=n*s+(n-1)*gap,x0=KV.cx*innerWidth-tw/2,top=KV.cy*innerHeight-s/2;
+  if(y<top-s*.35||y>top+s*1.35||x<x0-gap||x>x0+tw+gap)return null;
+  const i=clamp(Math.floor((x-x0+gap/2)/(s+gap)),0,n-1);return KV.keys[i].code}
+addEventListener('pointerdown',e=>{
+  if(ovOpen||!KV.on||!KV.keys.length||!gameOn()||(e.pointerType==='mouse'&&e.button>0))return;
+  const c=hitKey(e.clientX,e.clientY);if(!c)return;
+  tp.set(e.pointerId,c);game.press(c,performance.now())},true);
+const tpEnd=e=>{const c=tp.get(e.pointerId);if(c==null)return;tp.delete(e.pointerId);game.release(c,performance.now())};
+addEventListener('pointerup',tpEnd,true);addEventListener('pointercancel',tpEnd,true);
+// 그리기 루프
+function loop(){requestAnimationFrame(loop);const now=performance.now();
+  if(ovOpen){const d=fit(pc2);pcx.clearRect(0,0,pc2.width,pc2.height);
+    if(!tmp.keys.length){pcx.fillStyle='rgba(255,255,255,.5)';pcx.font=18*d+'px sans-serif';pcx.textAlign='center';pcx.fillText('키보드로 원하는 키를 순서대로 누르세요',pc2.width/2,tmp.cy*pc2.height)}
+    prev.draw(pcx,pc2.width,pc2.height,d,tmp,now);return}
+  const show=KV.on&&KV.keys.length&&gameOn();
+  if(!show){if(shown){shown=false;kvc.style.display='none';kc.clearRect(0,0,kvc.width,kvc.height);game.clear(now)}return}
+  if(!shown){shown=true;kvc.style.display='block'}
+  const d=fit(kvc);kc.clearRect(0,0,kvc.width,kvc.height);game.draw(kc,kvc.width,kvc.height,d,KV,now)}
+requestAnimationFrame(loop);
+// 설정 화면
+function hint(){q('#kvh').textContent=cap?('키를 순서대로 누르세요 (왼쪽부터 채워집니다): '+(tmp.keys.map(k=>k.label).join(' ')||'—')+'  ·  다 눌렀으면 확인'):'키를 눌러 불이 들어오는지 확인하고, 아래 슬라이더와 드래그로 크기·위치를 맞추세요. 키를 바꾸려면 "키 다시 입력".'}
+function sync(){q('#kvs').value=tmp.size;q('#kvt').value=tmp.trailH;q('#kvv').value=tmp.speed;q('#kvsv').textContent=Math.round(tmp.size);q('#kvtv').textContent=Math.round(tmp.trailH);q('#kvvv').textContent=Math.round(tmp.speed)}
+function openOv(){tmp=norm(KV);q('#kvonly').checked=tmp.only;cap=!tmp.keys.length;ovOpen=true;prev.clear(performance.now());ov.style.display='block';sync();hint()}
+function closeOv(ok){ovOpen=false;ov.style.display='none';prev.clear(performance.now());
+  if(ok){tmp.on=tmp.keys.length>0;KV=norm(tmp);save();q('#kvon').checked=KV.on}}
+q('#kvset').onclick=openOv;
+q('#kvr').onclick=()=>{tmp.keys=[];cap=true;hint()};
+q('#kvonly').onchange=e=>{tmp.only=e.target.checked};
+q('#kvok').onclick=()=>closeOv(true);q('#kvx').onclick=()=>closeOv(false);
+for(const [id,k] of [['#kvs','size'],['#kvt','trailH'],['#kvv','speed']])q(id).oninput=e=>{tmp[k]=+e.target.value;sync()};
+// 키 묶음 전체를 드래그해서 옮긴다
+let drag=null;
+pc2.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,cx:tmp.cx,cy:tmp.cy};pc2.setPointerCapture(e.pointerId)});
+pc2.addEventListener('pointermove',e=>{if(!drag)return;tmp.cx=clamp(drag.cx+(e.clientX-drag.x)/innerWidth,.03,.97);tmp.cy=clamp(drag.cy+(e.clientY-drag.y)/innerHeight,.03,.97)});
+const end=()=>{drag=null};pc2.addEventListener('pointerup',end);pc2.addEventListener('pointercancel',end);
+q('#kvon').checked=KV.on&&KV.keys.length>0;
+q('#kvon').onchange=e=>{if(e.target.checked&&!KV.keys.length){e.target.checked=false;openOv();return}KV.on=e.target.checked;save()};
 })();
 </script>
 </body></html>
