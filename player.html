@@ -1,8 +1,8 @@
 <!doctype html>
-<!--CLP-PLAYER 0.11.14-->
+<!--CLP-PLAYER 1.0.1-->
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Custom Level Player 0.11.14</title>
+<title>Custom Level Player 1.0.1</title>
 <style>
 :root{--bg:#f4f4f6;--fg:#15151a;--card:#fff;--ac:#e8453c;--mut:#777;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101015;--fg:#eee;--card:#1b1b23;--mut:#999}}
@@ -54,7 +54,7 @@ input[type=range]{width:100%}
 </style></head>
 <body>
 <div id="menu">
-<h1>Custom Level Player 0.11.14</h1>
+<h1>Custom Level Player 1.0.1</h1>
 <p class="m">.adofai 파일과 곡 파일(ogg·mp3·wav)을 함께 선택하거나, 레벨 .zip 을 선택하세요. 파일은 기기 안에서만 처리되며, 한 번 선택한 맵은 아래 보관함에 자동 저장됩니다.</p>
 <div class="btn pick">파일 선택<input id="f" type="file" multiple></div>
 <div id="fl" class="m"></div>
@@ -106,7 +106,7 @@ input[type=range]{width:100%}
 <button id="go" class="btn">시작</button>
 <div id="msg"></div>
 <details id="uplog" class="m"><summary style="cursor:pointer">업데이트 로그 (눌러서 펼치기)</summary>
-<p class="m">0.11.14: 업데이트 로그 기본 접힘, 화면 양옆 빈 곳을 드래그해도 메인 화면 스크롤. 위젯/키뷰어 설정 안내창을 접을 수 있게 함(접으면 화면 전체에서 자유롭게 이동). 키뷰어를 켜 두면 HUD 위젯 설정에서 키뷰어 위치도 같이 옮기고 정렬 가능.</p>
+<p class="m">1.0.1: 업데이트 로그 기본 접힘, 화면 양옆 빈 곳을 드래그해도 메인 화면 스크롤. 타법 추천 다이얼 가로 배치 옵션 추가. 위젯/키뷰어 설정 안내창을 접을 수 있게 함(접으면 화면 전체에서 자유롭게 이동). 키뷰어를 켜 두면 HUD 위젯 설정에서 키뷰어 위치도 같이 옮기고 정렬 가능.</p>
 <p class="m">0.11.13: HUD 위젯 — 타일 요구의 t/s를 bpm과 같은 크기로, 위젯 크기 범위 확대(30~500%), 드래그 시 다른 위젯·화면 중앙에 딱 붙게 자동 정렬.</p>
 <p class="m">0.11.12: HUD 위젯 추가(타일 요구 bpm, 입력 t/kps, 요구 t/kps에 따른 타법 추천 다이얼). 위젯마다 위치·크기 설정.</p>
 <p class="m">0.11.11: 음악/효과음 볼륨 슬라이더 추가.</p>
@@ -135,7 +135,7 @@ input[type=range]{width:100%}
 <div id="hwbody" style="margin-top:8px">
 <div style="margin-bottom:8px;line-height:1.4">켜고 끌 위젯을 고른 뒤, 화면의 위젯을 눌러 선택하고 드래그해서 옮기세요. 위젯마다 위치·크기가 따로이고, 다른 위젯이나 화면 중앙선에 가까이 가면 딱 붙게 정렬됩니다. 켜 둔 키뷰어도 여기서 위치만 옮길 수 있습니다. 위젯 설정창이 가리면 "접기"를 누르세요. (미리보기 숫자는 예시)</div>
 <div style="display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center">
-<label><input type="checkbox" id="hwr"> 타일 요구 (bpm)</label><label><input type="checkbox" id="hwk"> 입력 t/kps</label><label><input type="checkbox" id="hwd"> 타법 추천 다이얼</label>
+<label><input type="checkbox" id="hwr"> 타일 요구 (bpm)</label><label><input type="checkbox" id="hwk"> 입력 t/kps</label><label><input type="checkbox" id="hwd"> 타법 추천 다이얼</label><label><input type="checkbox" id="hwh"> 다이얼 가로 배치</label>
 <label>선택: <b id="hwsn"></b> <span id="hwsw">크기 <b id="hwsv"></b> <input type="range" id="hws" min="30" max="500" style="width:130px;vertical-align:middle"></span><span id="hwsk" style="display:none;color:#aaa">(크기는 키뷰어 설정에서)</span></label></div>
 </div></div></div>
 <div id="kvo" style="display:none;position:fixed;inset:0;z-index:9000;background:#000d;color:#fff">
@@ -1883,7 +1883,7 @@ $('#lv').onchange=()=>{startTile=0;$('#st').textContent='';markB()};
 // 앱(APK)의 시작 화면이 window.CLP_UPDATE_URL 을 넣어 준다. 일반 브라우저에서 열면 이 기능은 꺼진다.
 // 새 버전을 받아 두면(IndexedDB) 다음 실행부터 앱이 그 버전을 먼저 쓰고, 실행에 실패하면 기본 버전으로 자동 복구한다.
 (()=>{
-const APP_VER='0.11.14',U=window.CLP_UPDATE_URL;
+const APP_VER='1.0.1',U=window.CLP_UPDATE_URL;
 const vp=t=>{const m=new RegExp('<'+'!--CLP-PLAYER ([0-9.]+)-->').exec(t);return m&&m[1]};
 const cmp=(a,b)=>{const x=a.split('.').map(Number),y=b.split('.').map(Number);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d>0?1:-1}return 0};
 const idb=()=>new Promise((res,rej)=>{const q=indexedDB.open('clp-update',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
@@ -2032,12 +2032,12 @@ q('#kvon').onchange=e=>{if(e.target.checked&&!KV.keys.length){e.target.checked=f
 // 세 위젯은 각각 따로 켜고 끄고, 위치(드래그)·크기를 따로 정한다. 설정은 기기에 저장된다.
 (()=>{
 const q=s=>document.querySelector(s),KEY='clp-hud',clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const DEF={req:{on:false,x:.14,y:.30,s:1},kps:{on:false,x:.14,y:.40,s:1},dial:{on:false,x:.93,y:.55,s:1}};
+const DEF={req:{on:false,x:.14,y:.30,s:1},kps:{on:false,x:.14,y:.40,s:1},dial:{on:false,x:.93,y:.55,s:1,h:false}};
 const NAMES={req:'타일 요구',kps:'입력 t/kps',dial:'타법 추천',kv:'키뷰어'};
 const foldPanel=(btn,panel,body)=>{let c=false;btn.onclick=()=>{c=!c;body.style.display=c?'none':'block';panel.style.right=c?'auto':'0';panel.style.background=c?'transparent':'#000b';btn.textContent=c?'▼ 펼치기':'▲ 접기'}};
 
 function norm(o){const r=JSON.parse(JSON.stringify(DEF));if(o&&typeof o==='object')for(const k of Object.keys(r)){const v=o[k];if(!v||typeof v!=='object')continue;
-  r[k].on=!!v.on;for(const [f,a,b] of [['x',0,1],['y',0,1],['s',.3,5]])if(isFinite(+v[f]))r[k][f]=clamp(+v[f],a,b)}return r}
+  r[k].on=!!v.on;if(k==='dial')r[k].h=!!v.h;for(const [f,a,b] of [['x',0,1],['y',0,1],['s',.3,5]])if(isFinite(+v[f]))r[k][f]=clamp(+v[f],a,b)}return r}
 let H=norm(null);try{H=norm(JSON.parse(localStorage.getItem(KEY)||'null'))}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(H))}catch(e){}};
 // 타법 추천: 요구 t/kps → 키 수 (6~13: 2키, 13~25: 4키, 25~40: 6키, 40 이상: 8키, 6 미만: 1키)
@@ -2069,14 +2069,17 @@ function draw(ctx,W,Hh,d,cfg,v,now,rects,sel){
     ctx.font='600 '+fs+'px '+FONT;box('kps',ctx.measureText(t).width,fs*1.2);ctx.fillText(t,x,y)}
   if(cfg.dial.on){const c=cfg.dial,fs=base*c.s*1.5,x=c.x*W,y=c.y*Hh,ih=fs*1.35,f=v.req==null?st.fa:dialIdx(v.req);
     st.fa+=(f-st.fa)*Math.min(1,dt*9);
-    box('dial',fs*2.4,ih*3.2+fs*1.1);
-    ctx.font='500 '+fs*.5+'px '+FONT;ctx.globalAlpha=.7;ctx.fillText('추천 타법',x,y-ih*1.75);ctx.globalAlpha=1;
+    const hz=!!c.h,iw=fs*2.2,gp=hz?iw:ih; // 가로 배치면 항목 간격이 좌우(iw), 세로면 상하(ih)
+    if(hz)box('dial',iw*3.2,fs*2.9);else box('dial',fs*2.4,ih*3.2+fs*1.1);
+    ctx.font='500 '+fs*.5+'px '+FONT;ctx.globalAlpha=.7;ctx.fillText('추천 타법',x,hz?y-fs*1.35:y-ih*1.75);ctx.globalAlpha=1;
     for(let i=0;i<OPT.length;i++){const o=i-st.fa,a=Math.abs(o);if(a>2.3)continue;
       const al=clamp(1-a*.5,0,1)*(a<.5?1:.75),sc=1-Math.min(.35,a*.2);
-      ctx.globalAlpha=al*al>.02?clamp(al,0,1):0;ctx.font=(a<.5?'800 ':'600 ')+fs*sc+'px '+FONT;ctx.fillText(OPT[i],x,y+o*ih)}
-    ctx.globalAlpha=.55;ctx.shadowBlur=0;ctx.strokeStyle='#fff';ctx.lineWidth=1.5*d;
-    ctx.beginPath();ctx.moveTo(x-fs*1.05,y-ih*.52);ctx.lineTo(x-fs*.75,y-ih*.52);ctx.moveTo(x+fs*.75,y-ih*.52);ctx.lineTo(x+fs*1.05,y-ih*.52);
-    ctx.moveTo(x-fs*1.05,y+ih*.52);ctx.lineTo(x-fs*.75,y+ih*.52);ctx.moveTo(x+fs*.75,y+ih*.52);ctx.lineTo(x+fs*1.05,y+ih*.52);ctx.stroke()}
+      ctx.globalAlpha=al*al>.02?clamp(al,0,1):0;ctx.font=(a<.5?'800 ':'600 ')+fs*sc+'px '+FONT;ctx.fillText(OPT[i],hz?x+o*gp:x,hz?y:y+o*gp)}
+    ctx.globalAlpha=.55;ctx.shadowBlur=0;ctx.strokeStyle='#fff';ctx.lineWidth=1.5*d;ctx.beginPath();
+    if(hz){const hw=iw*.5;for(const sx of [-hw,hw]){ctx.moveTo(x+sx,y-fs*.75);ctx.lineTo(x+sx,y-fs*.45);ctx.moveTo(x+sx,y+fs*.45);ctx.lineTo(x+sx,y+fs*.75)}}
+    else{ctx.moveTo(x-fs*1.05,y-ih*.52);ctx.lineTo(x-fs*.75,y-ih*.52);ctx.moveTo(x+fs*.75,y-ih*.52);ctx.lineTo(x+fs*1.05,y-ih*.52);
+      ctx.moveTo(x-fs*1.05,y+ih*.52);ctx.lineTo(x-fs*.75,y+ih*.52);ctx.moveTo(x+fs*.75,y+ih*.52);ctx.lineTo(x+fs*1.05,y+ih*.52)}
+    ctx.stroke()}
   ctx.restore()}
 const cv2=q('#hdc'),cx2=cv2.getContext('2d'),pv=q('#hwp'),pcx=pv.getContext('2d'),ov=q('#hwo');
 let open=false,tmp=null,sel='req',shown=false,rects={},guides=null;
@@ -2098,7 +2101,7 @@ function loop(){requestAnimationFrame(loop);const now=performance.now();
 requestAnimationFrame(loop);
 // 설정 화면
 const kvAvail=()=>!!(window.CLP_KV&&CLP_KV.cfg().on&&CLP_KV.cfg().keys.length);
-function sync(){for(const [id,k] of [['#hwr','req'],['#hwk','kps'],['#hwd','dial']])q(id).checked=tmp[k].on;
+function sync(){for(const [id,k] of [['#hwr','req'],['#hwk','kps'],['#hwd','dial']])q(id).checked=tmp[k].on;q('#hwh').checked=!!tmp.dial.h;
   const isKv=sel==='kv';q('#hwsw').style.display=isKv?'none':'';q('#hwsk').style.display=isKv?'':'none';
   if(!isKv){q('#hws').value=Math.round(tmp[sel].s*100);q('#hwsv').textContent=Math.round(tmp[sel].s*100)+'%'}q('#hwsn').textContent=NAMES[sel]}
 function openOv(){tmp=norm(H);tmp.kv=kvAvail()?{on:true,x:CLP_KV.cfg().cx,y:CLP_KV.cfg().cy}:{on:false,x:.5,y:.8};sel=['req','kps','dial'].find(k=>tmp[k].on)||'req';open=true;ov.style.display='block';sync()}
@@ -2106,6 +2109,7 @@ function closeOv(ok){open=false;ov.style.display='none';if(ok){H=norm(tmp);save(
 foldPanel(q('#hwfold'),q('#hwpn'),q('#hwbody'));
 q('#hwset').onclick=openOv;q('#hwok').onclick=()=>closeOv(true);q('#hwx').onclick=()=>closeOv(false);
 for(const [id,k] of [['#hwr','req'],['#hwk','kps'],['#hwd','dial']])q(id).onchange=e=>{tmp[k].on=e.target.checked;if(e.target.checked)sel=k;sync()};
+q('#hwh').onchange=e=>{tmp.dial.h=e.target.checked;sel='dial';sync()};
 q('#hws').oninput=e=>{tmp[sel].s=clamp(+e.target.value/100,.3,5);sync()};
 let drag=null;
 pv.addEventListener('pointerdown',e=>{const d=pv.width/innerWidth,px=e.clientX*d,py=e.clientY*d;let hit=null;
