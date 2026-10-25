@@ -1,8 +1,8 @@
 <!doctype html>
-<!--CLP-PLAYER 0.11.11-->
+<!--CLP-PLAYER 0.11.13-->
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Custom Level Player 0.11.11</title>
+<title>Custom Level Player 0.11.13</title>
 <style>
 :root{--bg:#f4f4f6;--fg:#15151a;--card:#fff;--ac:#e8453c;--mut:#777;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101015;--fg:#eee;--card:#1b1b23;--mut:#999}}
@@ -54,7 +54,7 @@ input[type=range]{width:100%}
 </style></head>
 <body>
 <div id="menu">
-<h1>Custom Level Player 0.11.11</h1>
+<h1>Custom Level Player 0.11.13</h1>
 <p class="m">.adofai 파일과 곡 파일(ogg·mp3·wav)을 함께 선택하거나, 레벨 .zip 을 선택하세요. 파일은 기기 안에서만 처리되며, 한 번 선택한 맵은 아래 보관함에 자동 저장됩니다.</p>
 <div class="btn pick">파일 선택<input id="f" type="file" multiple></div>
 <div id="fl" class="m"></div>
@@ -100,10 +100,13 @@ input[type=range]{width:100%}
 <p class="m">🎵 음악 싱크는 맵 파일의 <b>offset</b>을 원작과 같은 방식으로 자동 적용합니다. 맵마다 따로 맞출 필요가 없고, 기기 지연은 위의 <b>입력 오프셋</b>(보정)만 쓰면 됩니다.</p>
 <div class="opt"><label><input type="checkbox" id="kvon"> 키뷰어 표시 (키보드로 누른 키 · 잔상)</label></div>
 <button id="kvset" class="btn" style="background:var(--card);color:var(--fg);border:1px solid var(--mut)">키뷰어 설정 (키 · 크기 · 위치 · 잔상)</button>
+<button id="hwset" class="btn" style="background:var(--card);color:var(--fg);border:1px solid var(--mut)">HUD 위젯 설정 (타일 요구 · t/kps · 타법 추천)</button>
 <div class="m">내 맵 보관함 (탭하면 바로 선택됩니다 · ✕로 삭제)</div>
 <div class="bl" id="bl"></div>
 <button id="go" class="btn">시작</button>
 <div id="msg"></div>
+<p class="m">0.11.13: HUD 위젯 — 타일 요구의 t/s를 bpm과 같은 크기로, 위젯 크기 범위 확대(30~500%), 드래그 시 다른 위젯·화면 중앙에 딱 붙게 자동 정렬.</p>
+<p class="m">0.11.12: HUD 위젯 추가(타일 요구 bpm, 입력 t/kps, 요구 t/kps에 따른 타법 추천 다이얼). 위젯마다 위치·크기 설정.</p>
 <p class="m">0.11.11: 음악/효과음 볼륨 슬라이더 추가.</p>
 <p class="m">0.11.10: 키뷰어 설정에 '등록한 키만 입력' 추가, 입력 오프셋 설정을 접이식으로, 실패 후 화면 터치/아무 키로 다시 하기.</p>
 <p class="m">0.11.9: 키뷰어의 키를 터치하면 해당 키에 불이 들어오고 잔상이 올라감.</p>
@@ -121,6 +124,16 @@ input[type=range]{width:100%}
 </div>
 <canvas id="c"></canvas>
 <canvas id="kvc" style="display:none;position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:4"></canvas>
+<canvas id="hdc" style="display:none;position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:4"></canvas>
+<div id="hwo" style="display:none;position:fixed;inset:0;z-index:9000;background:#000d;color:#fff">
+<canvas id="hwp" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none"></canvas>
+<div style="position:absolute;left:0;right:0;top:0;padding:10px 14px;background:#000b;font-size:13px">
+<div style="margin-bottom:8px;line-height:1.4">켜고 끌 위젯을 고른 뒤, 화면의 위젯을 눌러 선택하고 드래그해서 옮기세요. 위젯마다 위치·크기가 따로이고, 다른 위젯이나 화면 중앙선에 가까이 가면 딱 붙게 정렬됩니다. (미리보기 숫자는 예시)</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center">
+<label><input type="checkbox" id="hwr"> 타일 요구 (bpm)</label><label><input type="checkbox" id="hwk"> 입력 t/kps</label><label><input type="checkbox" id="hwd"> 타법 추천 다이얼</label>
+<label>선택: <b id="hwsn"></b> 크기 <b id="hwsv"></b> <input type="range" id="hws" min="30" max="500" style="width:130px;vertical-align:middle"></label></div>
+<div style="display:flex;gap:8px;margin-top:8px"><button id="hwok" style="padding:8px 16px;border-radius:8px;border:0;background:var(--ac);color:#fff;font-weight:700">확인</button><button id="hwx" style="padding:8px 12px;border-radius:8px;border:1px solid #888;background:#222;color:#fff">취소</button></div>
+</div></div>
 <div id="kvo" style="display:none;position:fixed;inset:0;z-index:9000;background:#000d;color:#fff">
 <canvas id="kvp" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none"></canvas>
 <div style="position:absolute;left:0;right:0;top:0;padding:10px 14px;background:#000b;font-size:13px">
@@ -1115,6 +1128,7 @@ function tap(ts){
     return;
   }
   if(G.opt.auto||T<G.Ts)return;
+  (G.tp||(G.tp=[])).push(performance.now()); // 입력 t/kps 계산용
   if(G.opt.hs)sfx();
   if(G.q>=G.req.length)return;
   const r=G.req[G.q],w=win(r),d=T+calAt(w.bpm)/1000-G.m.T[r];
@@ -1863,7 +1877,7 @@ $('#lv').onchange=()=>{startTile=0;$('#st').textContent='';markB()};
 // 앱(APK)의 시작 화면이 window.CLP_UPDATE_URL 을 넣어 준다. 일반 브라우저에서 열면 이 기능은 꺼진다.
 // 새 버전을 받아 두면(IndexedDB) 다음 실행부터 앱이 그 버전을 먼저 쓰고, 실행에 실패하면 기본 버전으로 자동 복구한다.
 (()=>{
-const APP_VER='0.11.11',U=window.CLP_UPDATE_URL;
+const APP_VER='0.11.13',U=window.CLP_UPDATE_URL;
 const vp=t=>{const m=new RegExp('<'+'!--CLP-PLAYER ([0-9.]+)-->').exec(t);return m&&m[1]};
 const cmp=(a,b)=>{const x=a.split('.').map(Number),y=b.split('.').map(Number);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d>0?1:-1}return 0};
 const idb=()=>new Promise((res,rej)=>{const q=indexedDB.open('clp-update',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
@@ -1998,6 +2012,101 @@ pc2.addEventListener('pointermove',e=>{if(!drag)return;tmp.cx=clamp(drag.cx+(e.c
 const end=()=>{drag=null};pc2.addEventListener('pointerup',end);pc2.addEventListener('pointercancel',end);
 q('#kvon').checked=KV.on&&KV.keys.length>0;
 q('#kvon').onchange=e=>{if(e.target.checked&&!KV.keys.length){e.target.checked=false;openOv();return}KV.on=e.target.checked;save()};
+})();
+</script>
+<script>
+// ── HUD 위젯: 타일 요구(bpm) · 입력 t/kps · 타법(키 수) 추천 다이얼 ───────────────
+// 세 위젯은 각각 따로 켜고 끄고, 위치(드래그)·크기를 따로 정한다. 설정은 기기에 저장된다.
+(()=>{
+const q=s=>document.querySelector(s),KEY='clp-hud',clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const DEF={req:{on:false,x:.14,y:.26,s:1},kps:{on:false,x:.14,y:.34,s:1},dial:{on:false,x:.93,y:.55,s:1}};
+const NAMES={req:'타일 요구',kps:'입력 t/kps',dial:'타법 추천'};
+function norm(o){const r=JSON.parse(JSON.stringify(DEF));if(o&&typeof o==='object')for(const k of Object.keys(r)){const v=o[k];if(!v||typeof v!=='object')continue;
+  r[k].on=!!v.on;for(const [f,a,b] of [['x',0,1],['y',0,1],['s',.3,5]])if(isFinite(+v[f]))r[k][f]=clamp(+v[f],a,b)}return r}
+let H=norm(null);try{H=norm(JSON.parse(localStorage.getItem(KEY)||'null'))}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(H))}catch(e){}};
+// 타법 추천: 요구 t/kps → 키 수 (6~13: 2키, 13~25: 4키, 25~40: 6키, 40 이상: 8키, 6 미만: 1키)
+const OPT=['1키','2키','4키','6키','8키'],CEN=[3,9.5,19,32.5,50];
+function dialIdx(k){if(k<=CEN[0])return 0;if(k>=CEN[4])return 4;for(let i=0;i<4;i++)if(k<=CEN[i+1])return i+(k-CEN[i])/(CEN[i+1]-CEN[i]);return 4}
+// 현재 요구: 다음에 쳐야 하는 타일까지 걸리는 시간의 역수
+function reqNow(){const g=G;if(!g||!g.req||!g.m||!g.req.length)return null;
+  const qi=Math.min(g.q,g.req.length-1),r=g.req[qi],pr=qi>0?g.req[qi-1]:g.s,T=g.m.T,dt=T[r]-T[pr];
+  return dt>1e-4?1/dt:null}
+function kpsNow(now){const g=G;if(!g||!g.tp)return 0;const a=g.tp;while(a.length&&now-a[0]>1000)a.shift();return a.length}
+const gameOn=()=>typeof G!=='undefined'&&G&&!G.done&&!G.cal;
+const dpr=()=>Math.min(window.devicePixelRatio||1,2);
+function fit(c){const d=dpr(),w=Math.max(1,Math.round(innerWidth*d)),h=Math.max(1,Math.round(innerHeight*d));if(c.width!==w||c.height!==h){c.width=w;c.height=h}return d}
+const FONT='"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif';
+const st={fa:0,lastReq:null,lastT:0};
+// cfg: 위젯 설정, v: {req(t/s), kps}, rects: 선택/드래그용 영역을 채워 돌려준다
+function draw(ctx,W,Hh,d,cfg,v,now,rects,sel){
+  const base=18*(typeof UIS==='number'?UIS:1)*d;
+  const dt=Math.min(.1,Math.max(0,(now-st.lastT)/1000));st.lastT=now;
+  ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=4*d;ctx.fillStyle='#fff';
+  const box=(k,w,h)=>{const c=cfg[k],x=c.x*W,y=c.y*Hh;if(rects)rects[k]={x:x-w/2,y:y-h/2,w,h};
+    if(sel===k){ctx.save();ctx.shadowBlur=0;ctx.setLineDash([6*d,5*d]);ctx.strokeStyle='#6cf';ctx.lineWidth=1.5*d;ctx.strokeRect(x-w/2-6*d,y-h/2-6*d,w+12*d,h+12*d);ctx.restore()}};
+  if(cfg.req.on){const c=cfg.req,fs=base*c.s,x=c.x*W,y=c.y*Hh,r=v.req;
+    const t1=r==null?'타일 요구 (bpm: -)':'타일 요구 (bpm: '+Math.round(r*60)+')',t2=r==null?'':r.toFixed(1)+' t/s';
+    ctx.font='600 '+fs+'px '+FONT;const w=Math.max(ctx.measureText(t1).width,1);
+    box('req',Math.max(w,t2?(ctx.font='600 '+fs+'px '+FONT,ctx.measureText(t2).width):0),fs*(t2?2.4:1.2));
+    ctx.fillText(t1,x,y-(t2?fs*.6:0));if(t2){ctx.globalAlpha=.9;ctx.font='600 '+fs+'px '+FONT;ctx.fillText(t2,x,y+fs*.6);ctx.globalAlpha=1}}
+  if(cfg.kps.on){const c=cfg.kps,fs=base*c.s*1.05,x=c.x*W,y=c.y*Hh,t='t/kps: '+v.kps.toFixed(1);
+    ctx.font='600 '+fs+'px '+FONT;box('kps',ctx.measureText(t).width,fs*1.2);ctx.fillText(t,x,y)}
+  if(cfg.dial.on){const c=cfg.dial,fs=base*c.s*1.5,x=c.x*W,y=c.y*Hh,ih=fs*1.35,f=v.req==null?st.fa:dialIdx(v.req);
+    st.fa+=(f-st.fa)*Math.min(1,dt*9);
+    box('dial',fs*2.4,ih*3.2+fs*1.1);
+    ctx.font='500 '+fs*.5+'px '+FONT;ctx.globalAlpha=.7;ctx.fillText('추천 타법',x,y-ih*1.75);ctx.globalAlpha=1;
+    for(let i=0;i<OPT.length;i++){const o=i-st.fa,a=Math.abs(o);if(a>2.3)continue;
+      const al=clamp(1-a*.5,0,1)*(a<.5?1:.75),sc=1-Math.min(.35,a*.2);
+      ctx.globalAlpha=al*al>.02?clamp(al,0,1):0;ctx.font=(a<.5?'800 ':'600 ')+fs*sc+'px '+FONT;ctx.fillText(OPT[i],x,y+o*ih)}
+    ctx.globalAlpha=.55;ctx.shadowBlur=0;ctx.strokeStyle='#fff';ctx.lineWidth=1.5*d;
+    ctx.beginPath();ctx.moveTo(x-fs*1.05,y-ih*.52);ctx.lineTo(x-fs*.75,y-ih*.52);ctx.moveTo(x+fs*.75,y-ih*.52);ctx.lineTo(x+fs*1.05,y-ih*.52);
+    ctx.moveTo(x-fs*1.05,y+ih*.52);ctx.lineTo(x-fs*.75,y+ih*.52);ctx.moveTo(x+fs*.75,y+ih*.52);ctx.lineTo(x+fs*1.05,y+ih*.52);ctx.stroke()}
+  ctx.restore()}
+const cv2=q('#hdc'),cx2=cv2.getContext('2d'),pv=q('#hwp'),pcx=pv.getContext('2d'),ov=q('#hwo');
+let open=false,tmp=null,sel='req',shown=false,rects={},guides=null;
+function loop(){requestAnimationFrame(loop);const now=performance.now();
+  if(open){const d=fit(pv);pcx.clearRect(0,0,pv.width,pv.height);rects={};
+    const k=22+18*Math.sin(now/2600); // 미리보기: 요구 t/s가 천천히 오르내림
+    draw(pcx,pv.width,pv.height,d,tmp,{req:Math.max(2,k+10*Math.sin(now/900+1)*0+0),kps:Math.max(0,k*.9+Math.sin(now/300))},now,rects,sel);
+    for(const k2 in rects){const r=rects[k2],s=tmp[k2];if(!s.on)delete rects[k2]}
+    if(guides){pcx.save();pcx.strokeStyle='#6cf';pcx.lineWidth=1.5*d;pcx.setLineDash([6*d,5*d]);pcx.beginPath();
+      if(guides.x!=null){pcx.moveTo(guides.x,0);pcx.lineTo(guides.x,pv.height)}if(guides.y!=null){pcx.moveTo(0,guides.y);pcx.lineTo(pv.width,guides.y)}pcx.stroke();pcx.restore()}
+    return}
+  const any=H.req.on||H.kps.on||H.dial.on,show=any&&gameOn()&&G.st!=='ready';
+  if(!show){if(shown){shown=false;cv2.style.display='none';cx2.clearRect(0,0,cv2.width,cv2.height)}return}
+  if(!shown){shown=true;cv2.style.display='block'}
+  const d=fit(cv2);cx2.clearRect(0,0,cv2.width,cv2.height);
+  const r=reqNow();draw(cx2,cv2.width,cv2.height,d,H,{req:r,kps:kpsNow(now)},now,null,null)}
+requestAnimationFrame(loop);
+// 설정 화면
+function sync(){for(const [id,k] of [['#hwr','req'],['#hwk','kps'],['#hwd','dial']])q(id).checked=tmp[k].on;
+  q('#hws').value=Math.round(tmp[sel].s*100);q('#hwsv').textContent=Math.round(tmp[sel].s*100)+'%';q('#hwsn').textContent=NAMES[sel]}
+function openOv(){tmp=norm(H);sel=['req','kps','dial'].find(k=>tmp[k].on)||'req';open=true;ov.style.display='block';sync()}
+function closeOv(ok){open=false;ov.style.display='none';if(ok){H=norm(tmp);save()}}
+q('#hwset').onclick=openOv;q('#hwok').onclick=()=>closeOv(true);q('#hwx').onclick=()=>closeOv(false);
+for(const [id,k] of [['#hwr','req'],['#hwk','kps'],['#hwd','dial']])q(id).onchange=e=>{tmp[k].on=e.target.checked;if(e.target.checked)sel=k;sync()};
+q('#hws').oninput=e=>{tmp[sel].s=clamp(+e.target.value/100,.3,5);sync()};
+let drag=null;
+pv.addEventListener('pointerdown',e=>{const d=pv.width/innerWidth,px=e.clientX*d,py=e.clientY*d;let hit=null;
+  for(const k of ['dial','kps','req']){const r=rects[k];if(r&&px>=r.x-14*d&&px<=r.x+r.w+14*d&&py>=r.y-14*d&&py<=r.y+r.h+14*d){hit=k;break}}
+  if(!hit)return;sel=hit;sync();drag={x:e.clientX,y:e.clientY,ox:tmp[hit].x,oy:tmp[hit].y,k:hit};pv.setPointerCapture(e.pointerId)});
+// 드래그 중 다른 위젯/화면 중앙에 가깝게 오면 딱 붙게(왼쪽·가운데·오른쪽 / 위·가운데·아래 정렬, 맞닿기) 자동 정렬한다
+const SNAP=10; // css px
+function snap(k,cx,cy,W,Hh,d){
+  const r=rects[k];if(!r)return{cx,cy,g:null};const thr=SNAP*d,g={x:null,y:null};
+  const mx=[-r.w/2,0,r.w/2],my=[-r.h/2,0,r.h/2],tx=[W/2],ty=[Hh/2];
+  for(const o in rects){if(o===k||!tmp[o].on)continue;const t=rects[o];tx.push(t.x,t.x+t.w/2,t.x+t.w);ty.push(t.y,t.y+t.h/2,t.y+t.h)}
+  let bx=thr+1,by=thr+1,sx=0,sy=0;
+  for(const m of mx)for(const t of tx){const df=t-(cx+m);if(Math.abs(df)<bx){bx=Math.abs(df);sx=df;g.x=t}}
+  for(const m of my)for(const t of ty){const df=t-(cy+m);if(Math.abs(df)<by){by=Math.abs(df);sy=df;g.y=t}}
+  if(bx>thr){sx=0;g.x=null}if(by>thr){sy=0;g.y=null}
+  return{cx:cx+sx,cy:cy+sy,g:(g.x!=null||g.y!=null)?g:null}}
+pv.addEventListener('pointermove',e=>{if(!drag)return;const c=tmp[drag.k],W=pv.width,Hh=pv.height,d=W/innerWidth;
+  let cx=(drag.ox+(e.clientX-drag.x)/innerWidth)*W,cy=(drag.oy+(e.clientY-drag.y)/innerHeight)*Hh;
+  const sn=snap(drag.k,cx,cy,W,Hh,d);guides=sn.g;
+  c.x=clamp(sn.cx/W,.03,.97);c.y=clamp(sn.cy/Hh,.03,.97)});
+const end=()=>{drag=null;guides=null};pv.addEventListener('pointerup',end);pv.addEventListener('pointercancel',end);
 })();
 </script>
 </body></html>
