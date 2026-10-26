@@ -1902,7 +1902,7 @@ $('#lv').onchange=()=>{startTile=0;$('#st').textContent='';markB()};
 // 앱(APK)의 시작 화면이 window.CLP_UPDATE_URL 을 넣어 준다. 일반 브라우저에서 열면 이 기능은 꺼진다.
 // 새 버전을 받아 두면(IndexedDB) 다음 실행부터 앱이 그 버전을 먼저 쓰고, 실행에 실패하면 기본 버전으로 자동 복구한다.
 (()=>{
-const APP_VER='1.0.1',U=window.CLP_UPDATE_URL;
+const APP_VER='1.0.5',U=window.CLP_UPDATE_URL;
 const vp=t=>{const m=new RegExp('<'+'!--CLP-PLAYER ([0-9.]+)-->').exec(t);return m&&m[1]};
 const cmp=(a,b)=>{const x=a.split('.').map(Number),y=b.split('.').map(Number);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d>0?1:-1}return 0};
 const idb=()=>new Promise((res,rej)=>{const q=indexedDB.open('clp-update',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
