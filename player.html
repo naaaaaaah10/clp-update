@@ -1,8 +1,8 @@
 <!doctype html>
-<!--CLP-PLAYER 1.0.1-->
+<!--CLP-PLAYER 1.0.5-->
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Custom Level Player 1.0.1</title>
+<title>Custom Level Player 1.0.5</title>
 <style>
 :root{--bg:#f4f4f6;--fg:#15151a;--card:#fff;--ac:#e8453c;--mut:#777;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101015;--fg:#eee;--card:#1b1b23;--mut:#999}}
@@ -54,7 +54,7 @@ input[type=range]{width:100%}
 </style></head>
 <body>
 <div id="menu">
-<h1>Custom Level Player 1.0.1</h1>
+<h1>Custom Level Player 1.0.5</h1>
 <p class="m">.adofai 파일과 곡 파일(ogg·mp3·wav)을 함께 선택하거나, 레벨 .zip 을 선택하세요. 파일은 기기 안에서만 처리되며, 한 번 선택한 맵은 아래 보관함에 자동 저장됩니다.</p>
 <div class="btn pick">파일 선택<input id="f" type="file" multiple></div>
 <div id="fl" class="m"></div>
@@ -106,7 +106,7 @@ input[type=range]{width:100%}
 <button id="go" class="btn">시작</button>
 <div id="msg"></div>
 <details id="uplog" class="m"><summary style="cursor:pointer">업데이트 로그 (눌러서 펼치기)</summary>
-<p class="m">1.0.1: 업데이트 로그 기본 접힘, 화면 양옆 빈 곳을 드래그해도 메인 화면 스크롤. 타법 추천 다이얼 가로 배치 옵션 추가. 위젯/키뷰어 설정 안내창을 접을 수 있게 함(접으면 화면 전체에서 자유롭게 이동). 키뷰어를 켜 두면 HUD 위젯 설정에서 키뷰어 위치도 같이 옮기고 정렬 가능.</p>
+<p class="m">1.0.5: MoveTrack으로 위치가 이동한 타일은 일반 타일을 그린 뒤 다시 앞 레이어로 그려, 이동한 위치에서 다른 타일(마법진 경로 등)에 가려지지 않도록 수정. 특정 타일 번호나 맵에 종속되지 않으며, 위치 이동 중인 타일에만 적용. 1.0.4: 투명도를 낮추는 MoveTrack이 먼 타일을 즉시 강제 표시해 일반 경로와 마법진이 겹치던 문제 수정. 불투명도를 올리는 미리보기 이벤트는 유지. 1.0.3: 여러 타일을 한 번에 지정해 투명도를 올리는 MoveTrack(앞쪽 타일 미리보기·마법진 패턴)로 보이게 한 타일이 AnimateTrack beatsAhead 범위 때문에 숨겨지던 문제 수정. 1.0.2: Tile 기준 카메라가 MoveTrack으로 밀려난 타일을 따라가 화면 밖으로 벗어나던 문제 수정(N 맵 128번 근처에서 카메라가 너무 위로 가던 문제). 1.0.1: 업데이트 로그 기본 접힘, 화면 양옆 빈 곳을 드래그해도 메인 화면 스크롤. 타법 추천 다이얼 가로 배치 옵션 추가. 위젯/키뷰어 설정 안내창을 접을 수 있게 함(접으면 화면 전체에서 자유롭게 이동). 키뷰어를 켜 두면 HUD 위젯 설정에서 키뷰어 위치도 같이 옮기고 정렬 가능.</p>
 <p class="m">0.11.13: HUD 위젯 — 타일 요구의 t/s를 bpm과 같은 크기로, 위젯 크기 범위 확대(30~500%), 드래그 시 다른 위젯·화면 중앙에 딱 붙게 자동 정렬.</p>
 <p class="m">0.11.12: HUD 위젯 추가(타일 요구 bpm, 입력 t/kps, 요구 t/kps에 따른 타법 추천 다이얼). 위젯마다 위치·크기 설정.</p>
 <p class="m">0.11.11: 음악/효과음 볼륨 슬라이더 추가.</p>
@@ -646,10 +646,21 @@ function sim(L){
     else if(a.eventType==='CustomBackground')bgs.push({ts,img:a.bgImage||'',mode:a.bgDisplayMode||'FitToScreen',color:a.color?cleanColor(a.color):null,imageColor:a.imageColor?cleanColor(a.imageColor):null});
   }
   mv.sort((x,y)=>x.ts-y.ts);bgs.sort((x,y)=>x.ts-y.ts);
+  // 여러 타일(3개 이상)을 한 번에 지정해 투명도를 0보다 크게 만드는 MoveTrack은 '앞쪽 타일 블록을 미리 보여 주는' 연출(마법진 미리보기 등)이다.
+  // 이런 타일은 AnimateTrack의 beatsAhead 범위 밖이어도 그 시각부터 보이게 한다. (한 타일씩 되돌리는 연출은 기존 규칙 그대로)
+  const revealT=new Array(n+1).fill(Infinity);
   for(const e of mv){
     const a=e.a,s0=Math.max(0,Math.min(n,rf(a.startTile,e.f))),s1=Math.max(0,Math.min(n,rf(a.endTile,e.f))),ez=EZ(a.ease),po=Array.isArray(a.positionOffset)?a.positionOffset:[],
-      sc=Array.isArray(a.scale)?a.scale[0]:a.scale,v=[nu(po[0]),nu(po[1]),nu(a.rotationOffset),nu(sc),nu(a.opacity)];
-    for(let j=Math.min(s0,s1);j<=Math.max(s0,s1);j++){const q=tl[j]||(tl[j]=[]),f0=tst(q,e.ts,ini[j]);q.push({ts:e.ts,du:e.du,ez,f:f0,t:f0.map((x,k)=>v[k]==null?x:v[k]),m:v.map(x=>x!=null)})}
+      sc=Array.isArray(a.scale)?a.scale[0]:a.scale,v=[nu(po[0]),nu(po[1]),nu(a.rotationOffset),nu(sc),nu(a.opacity)],targetOpacity=nu(a.opacity);
+    for(let j=Math.min(s0,s1);j<=Math.max(s0,s1);j++){
+      const q=tl[j]||(tl[j]=[]),f0=tst(q,e.ts,ini[j]);
+      // Only a full-opacity preview, or an event that actually raises a tile's opacity,
+      // may bypass AnimateTrack's normal beatsAhead visibility limit. A fade-down to 20–25%
+      // is not a reveal cue: treating it as one exposes far-away magic-circle tiles too early.
+      if(Math.abs(s1-s0)>=2&&targetOpacity!=null&&targetOpacity>0&&
+         (targetOpacity>=99||targetOpacity>(f0[4]??100)+0.5)) revealT[j]=Math.min(revealT[j],e.ts);
+      q.push({ts:e.ts,du:e.du,ez,f:f0,t:f0.map((x,k)=>v[k]==null?x:v[k]),m:v.map(x=>x!=null)});
+    }
   }
   // 타임라인은 액션의 원래 시각·반복 시각을 함께 사용한다. 맵별 특수처리 없이 공통 이벤트로 재생한다.
   const te=typ=>timedEvents(actions,typ,T,bp,n), bloomEv=te('Bloom'), filterEv=te('SetFilter'), flashEv=te('Flash'), shakeEv=te('ShakeScreen');
@@ -708,7 +719,7 @@ function sim(L){
   const fx={bloom,filters,flash,shake,trackColor,trackStyle,recolorTl};
   const warn=EXP_TRUNC?['반복 이벤트가 너무 많아 일부를 생략했습니다']:[];
   const sps=Array.isArray(S.position)?S.position:[0,0];
-  return{dec,warn,n,T,beatPos,tileVis,pcd,visAhead,visBehind,visAnimation,visDisappear,trackVis,visNoneHides,din,cw,dd,ps,pos,eff,mid,flip,p,bp,sp,ini,tl,bgs,spl:Object.keys(sp).map(Number),cam,fx,cam0:{rel:S.relativeTo,pos:[nu(sps[0])||0,nu(sps[1])||0],rot:nu(S.rotation)||0,zoom:nu(S.zoom)||100},
+  return{dec,warn,n,T,beatPos,tileVis,revealT,pcd,visAhead,visBehind,visAnimation,visDisappear,trackVis,visNoneHides,din,cw,dd,ps,pos,eff,mid,flip,p,bp,sp,ini,tl,bgs,spl:Object.keys(sp).map(Number),cam,fx,cam0:{rel:S.relativeTo,pos:[nu(sps[0])||0,nu(sps[1])||0],rot:nu(S.rotation)||0,zoom:nu(S.zoom)||100},
     bg:hx(S.backgroundColor,'000000'),tc:hx(S.trackColor,'debb7b'),style:S.trackStyle||'Standard',tileBaseMoved:ini.map(v=>Math.abs(v[0])>.015||Math.abs(v[1])>.015||Math.abs(v[2])>.05||Math.abs(v[3]-100)>.5),col:['#ff4d4d','#4d7dff']};
 }
 const cv=$('#c'),X=cv.getContext('2d'),fxCanvas=document.createElement('canvas'),fxCtx=fxCanvas.getContext('2d');let G=null;
@@ -791,7 +802,9 @@ function camBuild(m,s){
   // applies the same offset in unrotated world axes. Keeping separate keys avoids silently
   // flattening an authored camera move into a different coordinate system.
   const KD={Player:'P',Tile:'T',Global:'G',LastPosition:'F',LastPositionNoRotation:'N'};
-  const anchor=(k,tile,fix,t)=>k==='T'?tp(Math.min(tile,n),t):k==='G'?[0,0]:(k==='F'||k==='N')?(fix||[0,0]):fol(t);
+  // Tile 기준은 타일의 '원래 위치'를 쓴다. (MoveTrack으로 밀려난 타일을 따라가면, 타일이 흔들리거나 날아오는 동안 카메라가 같이 끌려가
+  // N 맵 128번처럼 길이 화면 밖으로 나간다. 플레이어 기준만 밀려난 위치를 따라간다.)
+  const anchor=(k,tile,fix,t)=>k==='T'?pos[Math.min(tile,n)]:k==='G'?[0,0]:(k==='F'||k==='N')?(fix||[0,0]):fol(t);
   const zs=[],rs=[];
   for(const e of m.cam){
     if(e.zoom!=null)zs.push({ts:e.ts,du:e.du,ez:e.ez,v:Math.max(1,e.zoom)});
@@ -1521,23 +1534,29 @@ function draw(T){
 
   // Track visibility changes are consumed incrementally instead of rescanning all earlier AnimateTrack events each frame.
   const vis=currentVisibility(T),ahead=vis.ahead,behind=vis.behind,appear=vis.animation,disappear=vis.disappear,appearName=normTrackAnim(appear),disappearName=normTrackAnim(disappear);
-  // 그리기 순서: 현재 타일에서 먼 타일부터, 가까운 타일을 위에 그린다(같은 거리면 앞으로 밟을 타일이 지나온 타일 위).
-  // 길이 겹치는 맵에서 먼 미래/과거 타일이 지금 밟을 타일을 가리지 않게 한다.
+  // 기본 타일은 현재 타일에서 먼 순서로 그린다. MoveTrack으로 위치가 이동한 타일은
+  // 같은 순서 안에서 별도 그룹으로 모아 마지막에 그려, 겹치는 다른 타일보다 앞에 보이게 한다.
+  // 맵 이름/타일 번호를 하드코딩하지 않는다. 포즈는 한 번만 계산해 큰 맵의 추가 부하도 줄인다.
+  const tileOrderNormal=[],tileOrderMoved=[],tilePoses=new Array(n+1);
   for(let d=Math.max(i,n-i);d>=0;d--)for(let qq=0;qq<2;qq++){
     const j=qq?i+d:i-d;if(j<0||j>n||(qq&&d===0))continue;
+    const q=m.tl[j],s=q?tst(q,T,m.ini[j]):m.ini[j];tilePoses[j]=s;
+    (Math.abs(s[0])>.015||Math.abs(s[1])>.015?tileOrderMoved:tileOrderNormal).push(j);
+  }
+  for(const j of tileOrderNormal.concat(tileOrderMoved)){
     const tv=m.tileVis[j],ahead=tv.ahead,behind=tv.behind,appearName=normTrackAnim(tv.animation),disappearName=normTrackAnim(tv.disappear);
     let rangeHidden=false;const c=pos[j],q=m.tl[j],ini=m.ini[j];
     // Most far-away untouched tiles can be skipped before reading/interpolating their timelines.
     if(G.opt.progressive&&j<G.s&&!q&&!m.tileBaseMoved[j])continue;
     if(!q&&!m.tileBaseMoved[j]){const dx0=c[0]-cx,dy0=c[1]-cy,margin=G.opt.progressive&&((j>i&&appearName!=='none')||(j<i&&disappearName!=='none'))?10:0,lim=vr+margin;if(dx0*dx0+dy0*dy0>lim*lim)continue;}
-    const s=q?tst(q,T,ini):ini,op=s[4],ox=s[0],oy=-s[1];
+    const s=tilePoses[j],op=s[4],ox=s[0],oy=-s[1];
     const moveX=Math.abs(ox)>.015||Math.abs(oy)>.015||Math.abs(s[2])>.05||Math.abs(s[3]-100)>.5;
     const oldTile=j<i,newTile=j>i;let alpha=1,as=1,ar=0,adx=0,ady=0;
     if(G.opt.progressive){
       if(j<G.s)rangeHidden=true;
       if(newTile&&appearName!=='none'){
         const dist=m.beatPos[j]-beatNow;
-        if(dist>ahead+1e-6)rangeHidden=true;
+        if(dist>ahead+1e-6){if(!(T>=m.revealT[j]))rangeHidden=true}
         else{
           const p=ahead>1e-7?clamp01(1-dist/ahead):0,mode=appearName,h=hash01(j,1)*Math.PI*2,r=hash01(j,2),spin=(hash01(j,3)-.5)*720;
           if(mode==='fade')alpha=p;
