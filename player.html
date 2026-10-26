@@ -1,8 +1,9 @@
 <!doctype html>
-<!--CLP-PLAYER 1.0.7-->
+<!--CLP-PLAYER 1.0.8-->
+<!--CLP-NOTES: ZIP 안에서 원본 레벨 후보를 우선 자동 선택하고, 시작 버튼 위에서 같은 ZIP의 맵을 선택할 수 있게 개선. 업데이트 로그를 버전별로 정리. -->
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Custom Level Player 1.0.7</title>
+<title>Custom Level Player 1.0.8</title>
 <style>
 :root{--bg:#f4f4f6;--fg:#15151a;--card:#fff;--ac:#e8453c;--mut:#777;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101015;--fg:#eee;--card:#1b1b23;--mut:#999}}
@@ -54,7 +55,7 @@ input[type=range]{width:100%}
 </style></head>
 <body>
 <div id="menu">
-<h1>Custom Level Player 1.0.7</h1>
+<h1>Custom Level Player 1.0.8</h1>
 <p class="m">.adofai 파일과 곡 파일(ogg·mp3·wav)을 함께 선택하거나, 레벨 .zip 을 선택하세요. 파일은 기기 안에서만 처리되며, 한 번 선택한 맵은 아래 보관함에 자동 저장됩니다.</p>
 <div class="btn pick">파일 선택<input id="f" type="file" multiple></div>
 <div id="fl" class="m"></div>
@@ -103,10 +104,20 @@ input[type=range]{width:100%}
 <button id="hwset" class="btn" style="background:var(--card);color:var(--fg);border:1px solid var(--mut)">HUD 위젯 설정 (타일 요구 · t/kps · 타법 추천)</button>
 <div class="m">내 맵 보관함 (탭하면 바로 선택됩니다 · ✕로 삭제)</div>
 <div class="bl" id="bl"></div>
+<label class="m" for="zipLv" style="display:block;margin-top:14px">선택한 ZIP 안의 맵</label>
+<select id="zipLv" disabled><option value="">ZIP 파일을 선택하면 내부 맵을 여기서 고를 수 있습니다</option></select>
+<div id="zipLvHint" class="m">ZIP을 선택하면 그 안의 .adofai 맵 목록이 표시됩니다.</div>
 <button id="go" class="btn">시작</button>
 <div id="msg"></div>
 <details id="uplog" class="m"><summary style="cursor:pointer">업데이트 로그 (눌러서 펼치기)</summary>
-<p class="m">1.0.7: 버그 수정 통합판. 1.0.4~1.0.7은 별도의 기능 업데이트가 아니라 카드보드 맵의 타일 표시·마법진 겹침·레이어 처리와 업데이트 버그를 해결하는 과정에서 나뉜 수정용 빌드이며, 같은 업데이트 작업으로 취급합니다. 1.0.6: 업데이트 버전 식별자 정리. 1.0.5: MoveTrack으로 위치가 이동한 타일은 일반 타일을 그린 뒤 다시 앞 레이어로 그려, 이동한 위치에서 다른 타일(마법진 경로 등)에 가려지지 않도록 수정. 특정 타일 번호나 맵에 종속되지 않으며, 위치 이동 중인 타일에만 적용. 1.0.4: 투명도를 낮추는 MoveTrack이 먼 타일을 즉시 강제 표시해 일반 경로와 마법진이 겹치던 문제 수정. 불투명도를 올리는 미리보기 이벤트는 유지. 1.0.3: 여러 타일을 한 번에 지정해 투명도를 올리는 MoveTrack(앞쪽 타일 미리보기·마법진 패턴)로 보이게 한 타일이 AnimateTrack beatsAhead 범위 때문에 숨겨지던 문제 수정. 1.0.2: Tile 기준 카메라가 MoveTrack으로 밀려난 타일을 따라가 화면 밖으로 벗어나던 문제 수정(N 맵 128번 근처에서 카메라가 너무 위로 가던 문제). 1.0.1: 업데이트 로그 기본 접힘, 화면 양옆 빈 곳을 드래그해도 메인 화면 스크롤. 타법 추천 다이얼 가로 배치 옵션 추가. 위젯/키뷰어 설정 안내창을 접을 수 있게 함(접으면 화면 전체에서 자유롭게 이동). 키뷰어를 켜 두면 HUD 위젯 설정에서 키뷰어 위치도 같이 옮기고 정렬 가능.</p>
+<p class="m">1.0.8: ZIP 안의 .adofai 파일 중 원본일 가능성이 높은 레벨(main/level/ZIP 이름과 같은 파일 등)을 우선 자동 선택. 백업·이전 버전·테스트용으로 보이는 파일은 우선순위를 낮춤. 시작 버튼 바로 위에 현재 선택한 ZIP 내부 맵을 고르는 목록 추가. 1.0.4~1.0.7은 별도 기능 업데이트가 아니라 같은 문제를 해결하는 과정에서 생성된 중간 버그 수정 빌드들임.</p>
+<p class="m">1.0.7: 버그 수정 통합 빌드. 카드보드 맵의 타일 표시·마법진 겹침·레이어 및 자동 업데이트 식별 문제를 수정하는 중간 버전.</p>
+<p class="m">1.0.6: 업데이트 버전 식별자를 맞추는 수정용 중간 빌드.</p>
+<p class="m">1.0.5: MoveTrack으로 위치가 이동한 타일은 일반 타일을 그린 뒤 다시 앞 레이어로 그려, 이동한 위치에서 다른 타일(마법진 경로 등)에 가려지지 않도록 수정. 특정 타일 번호나 맵에 종속되지 않으며, 위치 이동 중인 타일에만 적용.</p>
+<p class="m">1.0.4: 투명도를 낮추는 MoveTrack이 먼 타일을 즉시 강제 표시해 일반 경로와 마법진이 겹치던 문제 수정. 불투명도를 올리는 미리보기 이벤트는 유지.</p>
+<p class="m">1.0.3: 여러 타일을 한 번에 지정해 투명도를 올리는 MoveTrack(앞쪽 타일 미리보기·마법진 패턴)로 보이게 한 타일이 AnimateTrack beatsAhead 범위 때문에 숨겨지던 문제 수정.</p>
+<p class="m">1.0.2: Tile 기준 카메라가 MoveTrack으로 밀려난 타일을 따라가 화면 밖으로 벗어나던 문제 수정(N 맵 128번 근처에서 카메라가 너무 위로 가던 문제).</p>
+<p class="m">1.0.1: 업데이트 로그 기본 접힘, 화면 양옆 빈 곳을 드래그해도 메인 화면 스크롤. 타법 추천 다이얼 가로 배치 옵션 추가. 위젯/키뷰어 설정 안내창을 접을 수 있게 함(접으면 화면 전체에서 자유롭게 이동). 키뷰어를 켜 두면 HUD 위젯 설정에서 키뷰어 위치도 같이 옮기고 정렬 가능.</p>
 <p class="m">0.11.13: HUD 위젯 — 타일 요구의 t/s를 bpm과 같은 크기로, 위젯 크기 범위 확대(30~500%), 드래그 시 다른 위젯·화면 중앙에 딱 붙게 자동 정렬.</p>
 <p class="m">0.11.12: HUD 위젯 추가(타일 요구 bpm, 입력 t/kps, 요구 t/kps에 따른 타법 추천 다이얼). 위젯마다 위치·크기 설정.</p>
 <p class="m">0.11.11: 음악/효과음 볼륨 슬라이더 추가.</p>
@@ -122,7 +133,7 @@ input[type=range]{width:100%}
 <p class="m">0.11.1: 인터넷에 연결되어 있으면 시작할 때 새 버전을 확인하고, 있으면 업데이트할지 물어봅니다. 오프라인이면 마지막으로 설치된 버전으로 실행합니다.</p>
 <p class="m">0.11.0: 내장 맵을 모두 제거하고, 불러온 맵(.adofai+곡 / zip)을 기기 안에 저장하는 맵 보관함을 추가. 이름을 Custom Level Player로 변경.</p>
 <p class="m">0.10.9: 입력 오프셋을 속도(BPM)별로 보정. 100BPM과 200BPM에서 각각 보정하면 맵의 실제 BPM(피치 반영)에 맞춰 로그 보간해 적용합니다. 고속 보정을 하지 않으면 이전과 동일하게 동작합니다.</p>
-<p class="m">0.10.8: 플레이어 기준 카메라 이동 중 타일이 밀려나는 거리만큼 오프셋을 보정(Nyan Cat에서 카메라가 너무 앞서 가던 문제). 0.10.7: 카메라가 MoveTrack으로 옮겨진 타일/플레이어를 따라가도록 수정하고, LastPosition 카메라 이벤트가 추적 대상을 유지하도록 변경. 0.10.6: 같은 시각의 MoveTrack 이벤트가 서로 다른 항목(x/y/회전/크기/투명도)을 지정할 때 항목별로 적용하도록 수정(타일이 안 보이고 공만 움직이던 문제). 0.10.5: AnimateTrack의 음수 beatsBehind를 0으로 깎지 않고 지나온 타일을 유지하도록 수정. 0.10.4: 카메라 좌표 기준을 분리하고, 타일 숨김·표시 규칙이 이동 애니메이션에 의해 무시되지 않도록 보정했습니다. 숫자·텍스트·말풍선 핵심 연출 보호와 성능 조절은 유지됩니다. 핵심 연출은 자동 성능 보호 설정과 관계없이 가까운 구간부터 우선 로딩하고, 전체 카메라 장식을 시작 때 한꺼번에 큐에 넣지 않도록 했습니다. 기본 타일·카메라 처리 및 특수 이벤트의 원작 일치 여부는 계속 검증 중입니다.</p>
+<p class="m">0.10.8: 플레이어 기준 카메라 이동 중 타일이 밀려나는 거리만큼 오프셋을 보정(Nyan Cat에서 카메라가 너무 앞서 가던 문제). 0.10.7: 카메라가 MoveTrack으로 옮겨진 타일/플레이어를 따라가도록 수정하고, LastPosition 카메라 이벤트가 추적 대상을 유지하도록 변경. 0.10.6: 같은 시각의 MoveTrack 이벤트가 서로 다른 항목(x/y/회전/크기/투명도)을 지정할 때 항목별로 적용하도록 수정(타일이 안 보이고 공만 움직이던 문제). 0.10.5: AnimateTrack의 음수 beatsBehind를 0으로 깎지 않고 지나온 타일을 유지하도록 수정. 0.10.4: 카메라 좌표 기준을 분리하고, 타일 숨김·표시 규칙이 이동 애니메이션에 의해 무시되지 않도록 보정했습니다. 숫자·텍스트·말풍선 핵심 연출 보호와 성능 조절은 유지됩니다. 핵심 연출은 자동 성능 보호 설정과 관계없이 가까운 구간부터 우선 로딩하고, 전체 카메라 장식을 시작 때 한꺼번에 큐에 넣지 않도록 했습니다. 기본 타일·카메라 처리 및 특수 이벤트의 원작 일치 여부는 계속 검증 중.</p>
 </details>
 </div>
 <canvas id="c"></canvas>
@@ -207,10 +218,38 @@ const svOpt=()=>sv('adofai-opt',JSON.stringify({nf:$('#nf').checked,hs:$('#hs').
 for(const k of['#nf','#hs','#jm','#apf'])$(k).addEventListener('change',svOpt);
 // 저장소 키 규칙: 낱개 파일은 '파일명', zip 은 '@zN/폴더/파일명'(zip 마다 따로 보관, 폴더 구조 유지), 내장 레벨은 '@id/파일명'.
 // → 서로 다른 맵의 main.adofai / BG1.jpg 가 덮어써지지 않고, 한 zip 안의 여러 레벨도 구분된다.
-let zipN=0,lastAdded=[];
+let zipN=0,lastAdded=[],activeZipPrefix=null;
+const zipGroups=new Map();
 const normPath=p=>{const o=[];for(const t of String(p).replace(/\\/g,'/').split('/')){if(!t||t==='.')continue;if(t==='..'){if(o.length>1||(o.length===1&&o[0][0]!=='@'))o.pop();continue}o.push(t)}return o.join('/')};
 const nsOf=k=>k[0]==='@'?k.slice(0,k.indexOf('/')+1):'';
 const isB=k=>typeof BL!=='undefined'&&BL.some(b=>k.startsWith('@'+b.id+'/'));
+const matchKey=s=>String(s||'').toLowerCase().replace(/\.zip$/i,'').replace(/\s*\(\d+\)\s*/g,'').replace(/[^a-z0-9가-힣]/g,'');
+function levelRank(key,title=''){
+  const rel=String(key).slice(String(key).indexOf('/')+1).replace(/\\/g,'/'),parts=rel.split('/'),file=parts.at(-1)||'',stem=file.replace(/\.adofai$/i,'');
+  const sm=matchKey(stem),tm=matchKey(title);let score=1000-parts.length*35;
+  // Strongly prefer a level whose filename matches the ZIP's own/map title.
+  if(sm&&tm&&(sm===tm||tm.includes(sm)))score+=12000;
+  if(/^main$/i.test(stem))score+=9000;
+  else if(/^level$/i.test(stem))score+=8700;
+  else if(/^map$/i.test(stem))score+=8400;
+  else if(/^(original|originallevel|mainlevel)$/i.test(sm))score+=8000;
+  // Typical backup, duplicate, test and metadata copies should not beat the likely original.
+  if(parts.some(part=>/(^|[ _.-])(backup|bak|old|copy|previous|prev|autosave|auto-save)([ _.-]|$)/i.test(part))||/(backup|bak|old|copy|previous|prev|autosave|auto-save)/i.test(stem))score-=25000;
+  if(/tufplay|version|test|sample|preview|demo/i.test(stem))score-=5500;
+  if(/\s*\(\d+\)$/.test(stem))score-=300;
+  return score;
+}
+function sortZipLevels(levels,title=''){return [...levels].sort((a,b)=>levelRank(b,title)-levelRank(a,title)||a.localeCompare(b));}
+function syncZipLevelSelect(levelKey=$('#lv').value){
+  const sel=$('#zipLv'),hint=$('#zipLvHint');if(!sel||!hint)return;
+  const pref=[...zipGroups.keys()].filter(p=>levelKey&&levelKey.startsWith(p)).sort((a,b)=>b.length-a.length)[0];
+  if(!pref){activeZipPrefix=null;sel.replaceChildren(new Option('ZIP 내부 맵 없음',''));sel.disabled=true;hint.textContent='ZIP을 선택하면 그 안의 .adofai 맵 목록이 표시됩니다.';return}
+  activeZipPrefix=pref;const group=zipGroups.get(pref);if(!group){sel.replaceChildren(new Option('ZIP 내부 맵 없음',''));sel.disabled=true;hint.textContent='ZIP 맵 목록을 불러오지 못했습니다.';return}
+  const levels=sortZipLevels(group.levels||[],group.title);sel.replaceChildren(...levels.map(k=>new Option(btitle.get(k)||k,k)));
+  sel.disabled=levels.length===0;
+  if(levels.includes(levelKey))sel.value=levelKey;else if(levels.length)sel.value=levels[0];
+  hint.textContent=`${group.title} · 내부 맵 ${levels.length}개${levels.length>1?' — 여기서 바꾸면 바로 선택됩니다.':''}`;
+}
 async function legacyAdd(files){
   const msg=$('#msg');msg.textContent='';lastAdded=[];
   // 새로 고른 묶음에 낱개 .adofai 가 있으면, 이전에 고른 낱개 파일(다른 맵)은 비운다.
@@ -218,12 +257,13 @@ async function legacyAdd(files){
   for(const f of files){
     if(/\.zip$/i.test(f.name)){
       try{
-        msg.textContent='zip 여는 중…';const z=await JSZip.loadAsync(f),ns='@z'+(++zipN)+'/',zn=f.name.replace(/\.zip$/i,'');
+        msg.textContent='zip 여는 중…';const z=await JSZip.loadAsync(f),ns='@z'+(++zipN)+'/',zn=f.name.replace(/\.zip$/i,'');const zipLevels=[];
         for(const [n,en] of Object.entries(z.files)){
           if(en.dir||/(^|\/)(__macosx|\.[^/]*$)/i.test(n))continue;
           const key=ns+normPath(n).toLowerCase();store.set(key,{z:en});
-          if(/\.adofai$/i.test(key)){const rel=key.slice(ns.length);btitle.set(key,zn+(rel.includes('/')?' › '+rel:' › '+rel));lastAdded.push(key)}
+          if(/\.adofai$/i.test(key)){const rel=key.slice(ns.length);btitle.set(key,zn+' › '+rel);zipLevels.push(key)}
         }
+        const ordered=sortZipLevels(zipLevels,zn);zipGroups.set(ns,{title:zn,levels:ordered});lastAdded.push(...ordered);
         msg.textContent='';
       }catch(x){msg.textContent='zip 열기 실패: '+x.message}
     }else{const k=base(f.name);store.set(k,{f});if(/\.adofai$/i.test(k))lastAdded.push(k)}
@@ -257,7 +297,7 @@ function refresh(){
   $('#lv').replaceChildren(...ls.map(n=>new Option(btitle.get(n)||n,n)));
   const na=lastAdded.find(k=>ls.includes(k));lastAdded=[];
   if(na)$('#lv').value=na;else if(ls.includes(cur))$('#lv').value=cur;   // 방금 불러온 레벨을 자동 선택
-  startTile=0;$('#st').textContent='';markB();preflightSelected();
+  startTile=0;$('#st').textContent='';syncZipLevelSelect($('#lv').value);markB();preflightSelected();
 }
 // ── 내 맵 보관함 ──
 // 불러온 맵은 기기 안 IndexedDB 에 저장되어 다음 실행에도 목록에서 바로 고를 수 있다(외부로 올라가지 않음).
@@ -284,7 +324,9 @@ function loadB(b){
         const key=ns+normPath(n).toLowerCase();store.set(key,{z:en});
         if(/\.adofai$/i.test(key)){btitle.set(key,b.title+' › '+key.slice(ns.length));b.levels.push(key)}
       }
-    }else{
+      b.levels=sortZipLevels(b.levels,b.title);
+      zipGroups.set(ns,{title:b.title,levels:b.levels});
+    }else{ 
       for(const f of b.files){const key=ns+base(f.name);store.set(key,{f:f.blob});if(/\.adofai$/i.test(key)){btitle.set(key,b.title);b.levels.push(key)}}
     }
   })().catch(e=>{bLoads.delete(b.id);throw e});
@@ -294,13 +336,13 @@ async function pickB(b){
   const msg=$('#msg');msg.textContent='';
   try{await loadB(b)}catch(e){msg.textContent='저장된 맵 불러오기 실패: '+((e&&e.message)||e);return}
   refresh();
-  const first=b.levels[0];if(!first){msg.textContent='이 묶음에는 .adofai 레벨이 없습니다';return}
-  $('#lv').value=first;markB();$('#st').textContent='선택됨: '+(btitle.get(first)||b.title);preflightSelected();
+  const first=sortZipLevels(b.levels,b.title)[0];if(!first){msg.textContent='이 묶음에는 .adofai 레벨이 없습니다';syncZipLevelSelect('');return}
+  $('#lv').value=first;syncZipLevelSelect(first);markB();$('#st').textContent='선택됨: '+(btitle.get(first)||b.title);preflightSelected();
 }
 async function dropB(b){
   await DB.del(b.id);
   BL=BL.filter(x=>x!==b);bLoads.delete(b.id);
-  const ns='@'+b.id+'/';for(const k of [...store.keys()])if(k.startsWith(ns)){store.delete(k);btitle.delete(k)}
+  const ns='@'+b.id+'/';zipGroups.delete(ns);if(activeZipPrefix===ns)activeZipPrefix=null;for(const k of [...store.keys()])if(k.startsWith(ns)){store.delete(k);btitle.delete(k)}
 }
 function renderLib(){
   const box=$('#bl');
@@ -1890,7 +1932,8 @@ const pclose=()=>{$('#pk').style.display='none';$('#menu').style.display='block'
 $('#p0').onclick=pclose;
 $('#p1').onclick=()=>{startTile=pk.sel;$('#st').textContent=startTile?`시작 타일: #${startTile}`:'';pclose();go()};
 $('#vw').onclick=openPick;
-$('#lv').onchange=()=>{startTile=0;$('#st').textContent='';markB()};
+$('#lv').onchange=()=>{startTile=0;$('#st').textContent='';syncZipLevelSelect($('#lv').value);markB()};
+$('#zipLv').onchange=()=>{const v=$('#zipLv').value;if(!v)return;$('#lv').value=v;$('#lv').dispatchEvent(new Event('change',{bubbles:true}))};
 </script>
 
 
@@ -1902,7 +1945,7 @@ $('#lv').onchange=()=>{startTile=0;$('#st').textContent='';markB()};
 // 앱(APK)의 시작 화면이 window.CLP_UPDATE_URL 을 넣어 준다. 일반 브라우저에서 열면 이 기능은 꺼진다.
 // 새 버전을 받아 두면(IndexedDB) 다음 실행부터 앱이 그 버전을 먼저 쓰고, 실행에 실패하면 기본 버전으로 자동 복구한다.
 (()=>{
-const APP_VER='1.0.7',U=window.CLP_UPDATE_URL;
+const APP_VER='1.0.8',U=window.CLP_UPDATE_URL;
 const vp=t=>{const m=new RegExp('<'+'!--CLP-PLAYER ([0-9.]+)-->').exec(t);return m&&m[1]};
 const cmp=(a,b)=>{const x=a.split('.').map(Number),y=b.split('.').map(Number);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d>0?1:-1}return 0};
 const idb=()=>new Promise((res,rej)=>{const q=indexedDB.open('clp-update',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
