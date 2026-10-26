@@ -1,8 +1,8 @@
 <!doctype html>
-<!--CLP-PLAYER 1.0.5-->
+<!--CLP-PLAYER 1.0.6-->
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Custom Level Player 1.0.5</title>
+<title>Custom Level Player 1.0.6</title>
 <style>
 :root{--bg:#f4f4f6;--fg:#15151a;--card:#fff;--ac:#e8453c;--mut:#777;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101015;--fg:#eee;--card:#1b1b23;--mut:#999}}
@@ -54,7 +54,7 @@ input[type=range]{width:100%}
 </style></head>
 <body>
 <div id="menu">
-<h1>Custom Level Player 1.0.5</h1>
+<h1>Custom Level Player 1.0.6</h1>
 <p class="m">.adofai 파일과 곡 파일(ogg·mp3·wav)을 함께 선택하거나, 레벨 .zip 을 선택하세요. 파일은 기기 안에서만 처리되며, 한 번 선택한 맵은 아래 보관함에 자동 저장됩니다.</p>
 <div class="btn pick">파일 선택<input id="f" type="file" multiple></div>
 <div id="fl" class="m"></div>
@@ -106,7 +106,7 @@ input[type=range]{width:100%}
 <button id="go" class="btn">시작</button>
 <div id="msg"></div>
 <details id="uplog" class="m"><summary style="cursor:pointer">업데이트 로그 (눌러서 펼치기)</summary>
-<p class="m">1.0.5: MoveTrack으로 위치가 이동한 타일은 일반 타일을 그린 뒤 다시 앞 레이어로 그려, 이동한 위치에서 다른 타일(마법진 경로 등)에 가려지지 않도록 수정. 특정 타일 번호나 맵에 종속되지 않으며, 위치 이동 중인 타일에만 적용. 1.0.4: 투명도를 낮추는 MoveTrack이 먼 타일을 즉시 강제 표시해 일반 경로와 마법진이 겹치던 문제 수정. 불투명도를 올리는 미리보기 이벤트는 유지. 1.0.3: 여러 타일을 한 번에 지정해 투명도를 올리는 MoveTrack(앞쪽 타일 미리보기·마법진 패턴)로 보이게 한 타일이 AnimateTrack beatsAhead 범위 때문에 숨겨지던 문제 수정. 1.0.2: Tile 기준 카메라가 MoveTrack으로 밀려난 타일을 따라가 화면 밖으로 벗어나던 문제 수정(N 맵 128번 근처에서 카메라가 너무 위로 가던 문제). 1.0.1: 업데이트 로그 기본 접힘, 화면 양옆 빈 곳을 드래그해도 메인 화면 스크롤. 타법 추천 다이얼 가로 배치 옵션 추가. 위젯/키뷰어 설정 안내창을 접을 수 있게 함(접으면 화면 전체에서 자유롭게 이동). 키뷰어를 켜 두면 HUD 위젯 설정에서 키뷰어 위치도 같이 옮기고 정렬 가능.</p>
+<p class="m">1.0.6: 버전 번호 갱신. 1.0.5: MoveTrack으로 위치가 이동한 타일은 일반 타일을 그린 뒤 다시 앞 레이어로 그려, 이동한 위치에서 다른 타일(마법진 경로 등)에 가려지지 않도록 수정. 특정 타일 번호나 맵에 종속되지 않으며, 위치 이동 중인 타일에만 적용. 1.0.4: 투명도를 낮추는 MoveTrack이 먼 타일을 즉시 강제 표시해 일반 경로와 마법진이 겹치던 문제 수정. 불투명도를 올리는 미리보기 이벤트는 유지. 1.0.3: 여러 타일을 한 번에 지정해 투명도를 올리는 MoveTrack(앞쪽 타일 미리보기·마법진 패턴)로 보이게 한 타일이 AnimateTrack beatsAhead 범위 때문에 숨겨지던 문제 수정. 1.0.2: Tile 기준 카메라가 MoveTrack으로 밀려난 타일을 따라가 화면 밖으로 벗어나던 문제 수정(N 맵 128번 근처에서 카메라가 너무 위로 가던 문제). 1.0.1: 업데이트 로그 기본 접힘, 화면 양옆 빈 곳을 드래그해도 메인 화면 스크롤. 타법 추천 다이얼 가로 배치 옵션 추가. 위젯/키뷰어 설정 안내창을 접을 수 있게 함(접으면 화면 전체에서 자유롭게 이동). 키뷰어를 켜 두면 HUD 위젯 설정에서 키뷰어 위치도 같이 옮기고 정렬 가능.</p>
 <p class="m">0.11.13: HUD 위젯 — 타일 요구의 t/s를 bpm과 같은 크기로, 위젯 크기 범위 확대(30~500%), 드래그 시 다른 위젯·화면 중앙에 딱 붙게 자동 정렬.</p>
 <p class="m">0.11.12: HUD 위젯 추가(타일 요구 bpm, 입력 t/kps, 요구 t/kps에 따른 타법 추천 다이얼). 위젯마다 위치·크기 설정.</p>
 <p class="m">0.11.11: 음악/효과음 볼륨 슬라이더 추가.</p>
@@ -1902,7 +1902,7 @@ $('#lv').onchange=()=>{startTile=0;$('#st').textContent='';markB()};
 // 앱(APK)의 시작 화면이 window.CLP_UPDATE_URL 을 넣어 준다. 일반 브라우저에서 열면 이 기능은 꺼진다.
 // 새 버전을 받아 두면(IndexedDB) 다음 실행부터 앱이 그 버전을 먼저 쓰고, 실행에 실패하면 기본 버전으로 자동 복구한다.
 (()=>{
-const APP_VER='1.0.5',U=window.CLP_UPDATE_URL;
+const APP_VER='1.0.1',U=window.CLP_UPDATE_URL;
 const vp=t=>{const m=new RegExp('<'+'!--CLP-PLAYER ([0-9.]+)-->').exec(t);return m&&m[1]};
 const cmp=(a,b)=>{const x=a.split('.').map(Number),y=b.split('.').map(Number);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d>0?1:-1}return 0};
 const idb=()=>new Promise((res,rej)=>{const q=indexedDB.open('clp-update',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
