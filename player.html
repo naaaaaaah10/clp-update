@@ -1,9 +1,9 @@
 <!doctype html>
-<!--CLP-PLAYER 1.0.8-->
+<!--CLP-PLAYER 1.0.10-->
 <!--CLP-NOTES: ZIP 안에서 원본 레벨 후보를 우선 자동 선택하고, 시작 버튼 위에서 같은 ZIP의 맵을 선택할 수 있게 개선. 업데이트 로그를 버전별로 정리. -->
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Custom Level Player 1.0.8</title>
+<title>Custom Level Player 1.0.10</title>
 <style>
 :root{--bg:#f4f4f6;--fg:#15151a;--card:#fff;--ac:#e8453c;--mut:#777;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101015;--fg:#eee;--card:#1b1b23;--mut:#999}}
@@ -55,7 +55,7 @@ input[type=range]{width:100%}
 </style></head>
 <body>
 <div id="menu">
-<h1>Custom Level Player 1.0.8</h1>
+<h1>Custom Level Player 1.0.10</h1>
 <p class="m">.adofai 파일과 곡 파일(ogg·mp3·wav)을 함께 선택하거나, 레벨 .zip 을 선택하세요. 파일은 기기 안에서만 처리되며, 한 번 선택한 맵은 아래 보관함에 자동 저장됩니다.</p>
 <div class="btn pick">파일 선택<input id="f" type="file" multiple></div>
 <div id="fl" class="m"></div>
@@ -95,7 +95,11 @@ input[type=range]{width:100%}
 <div class="m">고속 입력 오프셋 (200BPM 이상) <b id="cv2">100BPM과 동일</b></div>
 <input type="range" id="cal2" min="-1000" max="1000" value="0">
 <button id="cb3" class="btn" style="background:var(--card);color:var(--fg);border:1px solid var(--mut)">고속 오프셋 보정 (200BPM 반복)</button>
+<div class="opt"><label><input type="checkbox" id="vauto" checked> 화면을 입력 오프셋에 자동으로 맞춤 (행성이 타일에 닿는 순간 = 판정이 정확인 순간)</label></div>
+<div class="m">화면 오프셋 <b id="vsv2">0</b>ms <span style="opacity:.7">(자동 켜짐: 입력 오프셋(100BPM)을 따라가며, 직접 움직이면 그 차이만큼 미세 조정)</span></div>
+<input type="range" id="vso" min="-1000" max="1000" step="1" value="0">
 <button id="cz" class="btn" style="background:var(--card);color:var(--fg);border:1px solid var(--mut)">오프셋 모두 0으로 초기화</button>
+<p class="m">입력 오프셋은 판정만 옮깁니다. 기본으로 화면도 입력 오프셋을 따라가도록 자동 적용됩니다(소리와 판정은 그대로). 자동이 어색하면 체크를 끄고 아래 화면 오프셋 값으로 직접 맞추세요(체크를 끄면 슬라이더 값이 그대로 화면 오프셋이 됩니다).</p>
 <p class="m">사람은 느린 박자에서는 박보다 일찍, 빠른 박자에서는 박에 더 가깝게 누르는 경향이 있어 100BPM에서 맞춘 오프셋이 빠른 구간에서는 어긋나 느껴질 수 있습니다. 두 지점(100BPM / 200BPM)을 각각 보정하면 맵의 실제 BPM에 맞춰 그 사이 값이 자동으로 적용됩니다. 고속 보정을 하지 않으면 모든 속도에 100BPM 값이 적용됩니다.</p>
 </div>
 <p class="m">🎵 음악 싱크는 맵 파일의 <b>offset</b>을 원작과 같은 방식으로 자동 적용합니다. 맵마다 따로 맞출 필요가 없고, 기기 지연은 위의 <b>입력 오프셋</b>(보정)만 쓰면 됩니다.</p>
@@ -110,6 +114,8 @@ input[type=range]{width:100%}
 <button id="go" class="btn">시작</button>
 <div id="msg"></div>
 <details id="uplog" class="m"><summary style="cursor:pointer">업데이트 로그 (눌러서 펼치기)</summary>
+<p class="m">1.0.10: 화면이 입력 오프셋을 자동으로 따라가도록 변경(기본 켜짐). 화면 오프셋 슬라이더는 입력 오프셋(슬라이더·보정·초기화)이 바뀔 때마다 현재 적용값으로 갱신되고, 직접 움직이면 그 차이만 미세 조정으로 저장. </p>
+<p class="m">1.0.9: '화면 오프셋' 추가(입력 오프셋은 판정만 옮기므로, 화면이 판정과 어긋나 보일 때 화면만 따로 −300~+300ms 조정). </p>
 <p class="m">1.0.8: ZIP 안의 .adofai 파일 중 원본일 가능성이 높은 레벨(main/level/ZIP 이름과 같은 파일 등)을 우선 자동 선택. 백업·이전 버전·테스트용으로 보이는 파일은 우선순위를 낮춤. 시작 버튼 바로 위에 현재 선택한 ZIP 내부 맵을 고르는 목록 추가. 1.0.4~1.0.7은 별도 기능 업데이트가 아니라 같은 문제를 해결하는 과정에서 생성된 중간 버그 수정 빌드들임.</p>
 <p class="m">1.0.7: 버그 수정 통합 빌드. 카드보드 맵의 타일 표시·마법진 겹침·레이어 및 자동 업데이트 식별 문제를 수정하는 중간 버전.</p>
 <p class="m">1.0.6: 업데이트 버전 식별자를 맞추는 수정용 중간 빌드.</p>
@@ -193,7 +199,10 @@ try{const o=JSON.parse(ld('clp-vol')||'null');if(o){for(const k of['m','s'])if(i
 {const sync=()=>{$('#vm').value=Math.round(VOL.m*100);$('#vs').value=Math.round(VOL.s*100);$('#vmv').textContent=Math.round(VOL.m*100);$('#vsv').textContent=Math.round(VOL.s*100)};sync();
  for(const [id,k] of [['#vm','m'],['#vs','s']])$(id).oninput=e=>{VOL[k]=+e.target.value/100;sync();sv('clp-vol',JSON.stringify(VOL));
    if(k==='m'&&typeof G!=='undefined'&&G&&G.mus)try{G.mus.gain.value=nv(G.S&&G.S.volume,100)/100*VOL.m}catch(e){}}}
-let fastSet=false;
+let fastSet=false;let visFine=0;{const v=ld('adofai-vso');if(v!=null&&v!==''&&isFinite(+v))visFine=+v}
+// 화면 오프셋 슬라이더 표시 = (자동이면 입력 오프셋) + 미세 조정. 입력 오프셋이 바뀌면(슬라이더·보정·초기화) 이 함수로 항상 다시 맞춘다.
+const syncVso=()=>{const e=document.getElementById('vso'),l=document.getElementById('vsv2'),a=document.getElementById('vauto'),c=document.getElementById('cal');if(!e||!l)return;const base=a&&a.checked&&c?(+c.value||0):0,v=Math.max(-1000,Math.min(1000,Math.round(base+visFine)));e.value=v;l.textContent=v};
+setTimeout(()=>{const a=document.getElementById('vauto');if(a&&ld('adofai-vauto')==='0')a.checked=false;syncVso()},0);
 const setFastTxt=()=>{$('#cv2').textContent=fastSet?$('#cal2').value+'ms':'100BPM과 동일'};
 {const v=ld('adofai-cal');if(v!=null&&v!==''&&isFinite(+v)){$('#cal').value=v;$('#cv').textContent=v}
  const v2=ld('adofai-cal2');if(v2!=null&&v2!==''&&isFinite(+v2)){$('#cal2').value=v2;fastSet=true}setFastTxt();
@@ -207,10 +216,10 @@ const renderDpr=()=>{const d=window.devicePixelRatio||1,q=(typeof G!=='undefined
   return q==='lite'?Math.min(d,mobile?1.15:1.35):q==='balanced'?Math.min(d,mobile?1.3:1.5):Math.min(d,mobile?1.5:1.8)};
 $('#fxq').addEventListener('change',()=>{sv('adofai-fxq',$('#fxq').value);size()});
 $('#bloom').addEventListener('change',()=>sv('adofai-bloom',$('#bloom').checked?'1':'0'));
-$('#cal').oninput=e=>{$('#cv').textContent=e.target.value;sv('adofai-cal',e.target.value)};
-$('#cal2').oninput=e=>{fastSet=true;setFastTxt();sv('adofai-cal2',e.target.value)};
+$('#cal').oninput=e=>{$('#cv').textContent=e.target.value;sv('adofai-cal',e.target.value);syncVso()};
+$('#cal2').oninput=e=>{fastSet=true;setFastTxt();sv('adofai-cal2',e.target.value)}; $('#vso').oninput=e=>{const base=$('#vauto').checked?(+$('#cal').value||0):0;visFine=(+e.target.value)-base;$('#vsv2').textContent=e.target.value;sv('adofai-vso',visFine)}; $('#vauto').onchange=e=>{sv('adofai-vauto',e.target.checked?'1':'0');syncVso()};
 $('#ofb').onclick=()=>{const p=$('#ofp'),o=p.style.display==='none';p.style.display=o?'block':'none';$('#ofb').textContent='입력 오프셋 설정 '+(o?'▴':'▾')};
-$('#cz').onclick=()=>{$('#cal').value=0;$('#cv').textContent='0';sv('adofai-cal',0);$('#cal2').value=0;fastSet=true;setFastTxt();sv('adofai-cal2',0)}; // 두 오프셋을 정확히 0으로
+$('#cz').onclick=()=>{visFine=0;sv('adofai-vso',0);$('#cal').value=0;$('#cv').textContent='0';sv('adofai-cal',0);$('#cal2').value=0;fastSet=true;setFastTxt();sv('adofai-cal2',0);syncVso()}; // 두 오프셋을 정확히 0으로
 $('#cv2').onclick=()=>{fastSet=false;try{localStorage.removeItem('adofai-cal2')}catch(e){}setFastTxt()}; // 탭하면 고속 보정 해제
 try{["adofai-md","adofai-offset-mode"].forEach(k=>localStorage.removeItem(k))}catch(e){} // 이전 버전의 음악 지연/기준 설정은 더 이상 쓰지 않음
 // 판정 방식·노페일·히트음은 저장해 둔다(오토는 실수 방지를 위해 저장하지 않음)
@@ -986,7 +995,7 @@ async function launch(){
   $('#mapinfo').textContent=formatMapProfile(profile);
   G={dil,dsrc,dpending,dqueue,dactive:0,decoBytes:0,dcap,mobileDeco,maxDecoImages:mobileDeco?64:120,maxDecoBytes:mobileDeco?48*1024*1024:128*1024*1024,coreImages,offS,mg:mkMg(ctx),ctx,ab,S,m,s,Ts:m.T[s],sp0:60/m.bp[s],st:'ready',req,q:0,cur:s,fT:0,fP:performance.now(),cnt:[0,0,0,0],hits:[],cb:0,max:0,done:false,name,xs:[],bgl,bg0:base(S.bgImage||''),bgm:S.bgDisplayMode||'FitToScreen',bgc0:cleanColor(S.bgImageColor||'ffffff'),
     perf:{baseQuality:renderQuality(),level:0,shedDecorations:false,windowStart:0,frames:0,slow:0,badWindows:0,goodSince:0,lastChange:0},
-    opt:{auto:$('#auto').checked,autoPerf:$('#apf').checked,nf:$('#nf').checked,hs:$('#hs').checked,progressive:$('#pr').checked,cal:+$('#cal').value,cal2:fastSet?+$('#cal2').value:null,mode:$('#jm').value,fxq:renderQuality(),bloom:$('#bloom').checked}};
+    opt:{auto:$('#auto').checked,autoPerf:$('#apf').checked,nf:$('#nf').checked,hs:$('#hs').checked,progressive:$('#pr').checked,cal:+$('#cal').value,cal2:fastSet?+$('#cal2').value:null,vso:visFine||0,vauto:$('#vauto')?$('#vauto').checked:true,mode:$('#jm').value,fxq:renderQuality(),bloom:$('#bloom').checked}};
   // Queue only cues near this starting section; upcoming sections are primed in small windows.
   G._cuePrefetchBucket=Math.floor(s/24);primeCoreCues(G,s,Math.min(m.n,s+64));
   msg.textContent='';pfReset();wlOn();
@@ -1083,6 +1092,16 @@ function abortG(msg){
   const t=document.createElement('div');t.style.cssText='font-size:20px;font-weight:700;white-space:pre-line;padding:0 16px';t.textContent=msg;
   const b=document.createElement('button');b.className='btn';b.textContent='메뉴로';b.onclick=exit;r.append(t,b);
 }
+// 그리는 시각 = 소리 시각 + (자동: 입력 오프셋) + 미세 조정. 판정은 d=T+cal−Tm 이므로 화면도 T+cal에 맞추면
+// '행성이 타일에 닿는 순간'이 '판정이 정확인 순간'과 같아진다. BPM에 따라 오프셋이 변할 때 화면이 튀지 않게 부드럽게 따라간다.
+function visT(T,rd){
+  const g=G;if(rd||g.opt.auto||g.cal)return T;
+  const now=performance.now(),dt=g._vt?Math.min(100,now-g._vt):16;g._vt=now;
+  let tgt=0;
+  if(g.opt.vauto!==false){const m=g.m,i=Math.max(0,Math.min(m.n-1,g.cur||0));tgt=calAt(Number(m.bp[i])||Number(g.S&&g.S.bpm)||100)/1000}
+  g._va=g._va==null?tgt:g._va+(tgt-g._va)*Math.min(1,dt/150);
+  return T+g._va+(g.opt.vso||0)/1000;
+}
 function frame0(){
   if(!G||G.done)return;
   ckTick(G.ctx);
@@ -1101,7 +1120,8 @@ function frame0(){
     else while(G&&!G.done&&G.q<r.length&&(()=>{const w=win(r[G.q]);return T+calAt(w.bpm)/1000-Tm[r[G.q]]>w.v+MISS_DISPATCH_GRACE})())jd(null);
     if(!G||G.done)return;
   }
-  safeDraw(T);
+  // 화면 오프셋: 그리는 시각만 옮긴다(판정·소리는 그대로). 오토·보정·카운트다운 전에는 적용하지 않는다.
+  safeDraw(visT(T,rd));
   $('#bar i').style.width=Math.max(0,Math.min(100,T/Tm[G.m.n]*100))+'%';
   if(!G.cal&&G.q>=r.length&&!rd&&T>Tm[G.m.n]+1.2)return fin(true);
   G.raf=requestAnimationFrame(frame);
@@ -1881,7 +1901,7 @@ function exit(){
 $('#x').onclick=exit;$('#go').onclick=go;$('#cb2').onclick=()=>{if(busy||G)return;getCtx();calib(100,'base')};
 $('#cb3').onclick=()=>{if(busy||G)return;getCtx();calib(200,'fast')};
 $('#ap').onclick=()=>{if(!G||G.avg==null)return;const v=Math.max(-1000,Math.min(1000,Math.round(-G.avg*1000)));
-  if(G.tgt==='fast'){$('#cal2').value=v;fastSet=true;setFastTxt();sv('adofai-cal2',v)}else{$('#cal').value=v;$('#cv').textContent=v;sv('adofai-cal',v)}exit()};
+  if(G.tgt==='fast'){$('#cal2').value=v;fastSet=true;setFastTxt();sv('adofai-cal2',v)}else{$('#cal').value=v;$('#cv').textContent=v;sv('adofai-cal',v);syncVso()}exit()};
 
 const pc=$('#pc'),ps=$('#ps');
 function psize(){const d=devicePixelRatio||1;pc.width=innerWidth*d;pc.height=innerHeight*d}
